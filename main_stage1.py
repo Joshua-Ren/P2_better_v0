@@ -47,7 +47,7 @@ def get_args_parser():
                         help='can be sgd or adam')
     parser.add_argument('--lr', type=float, default=None, metavar='LR',
                         help='learning rate (absolute lr)')
-    parser.add_argument('--blr', type=float, default=1e-2, metavar='LR',
+    parser.add_argument('--blr', type=float, default=1e-3, metavar='LR',
                         help='base learning rate: absolute_lr = base_lr * total_batch_size / 256')
     #parser.add_argument('--clip_grad', type=float, default=10, metavar='NORM',
     #                    help='Clip gradient norm (default: None, no clipping)')
