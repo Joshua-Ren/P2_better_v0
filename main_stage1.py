@@ -215,7 +215,7 @@ def main(args):
         evaluate(data_loader_val, model, args.device, args)
 
     if True:
-        save_checkpoint(model, save_path, file_name='ep_'+str(epoch))
+        save_checkpoint(model_without_ddp, args.save_path, file_name='ep_'+str(epoch))  # Check whether OK to save the multiGPU model
 
 if __name__ == '__main__':
     args = get_args_parser()
