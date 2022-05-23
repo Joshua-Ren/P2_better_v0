@@ -223,5 +223,5 @@ if __name__ == '__main__':
     if args.dataset=='cifar10' or args.dataset=='stl10':
         args.nb_classes=10
     elif args.dataset=='cifar100':
-        args.nb_class=100
+        args.nb_classes=100
     main(args)
