@@ -1,6 +1,6 @@
 #---------------------------------------------------------
-# Stage 1 is pre-train, i.e., generate checkpoint by training
-# on a specific dataset.
+# Stage 2 is LP-FT, i.e., on a different dataset,
+# linear probe and then finetune together
 # --------------------------------------------------------
 
 import math

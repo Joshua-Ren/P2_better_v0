@@ -1,6 +1,6 @@
 #---------------------------------------------------------
-# Stage 1 is pre-train, i.e., generate checkpoint by training
-# on a specific dataset.
+# Stage 2 is LP-FT, i.e., on a different dataset,
+# linear probe and then finetune together
 # --------------------------------------------------------
 
 import argparse
@@ -29,10 +29,12 @@ from engine_stage1 import train_one_epoch, evaluate
 
 
 def get_args_parser():
-    parser = argparse.ArgumentParser('Stage1 generate pretrain checkpoint', add_help=False)
+    parser = argparse.ArgumentParser('Stage2 linear prob and finetune', add_help=False)
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * # gpus')
     parser.add_argument('--epochs', default=200, type=int)
+    parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 4, 8, 16, 32, 64, 128, 200], type=list,
+                        help='which vector_ep we select for the FT phase')
 
     # Model parameters
     parser.add_argument('--model', default='resnet18', type=str, metavar='MODEL',

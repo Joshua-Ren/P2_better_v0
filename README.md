@@ -4,3 +4,4 @@
 timm
 efficientnet
 wandb
+lmdb (for imagenet dataset)
