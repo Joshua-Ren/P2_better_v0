@@ -212,7 +212,7 @@ def main(args):
         if True: #args.distributed:
             data_loader_train.sampler.set_epoch(epoch)
         train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args)
-        evaluate(data_loader_val, model, args.device)
+        evaluate(data_loader_val, model, args.device, args)
 
     if True:
         save_checkpoint(model, save_path, file_name='ep_'+str(epoch))
