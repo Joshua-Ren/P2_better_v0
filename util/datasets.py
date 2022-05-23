@@ -55,7 +55,8 @@ def get_std_transform(figsize=32):
         For CIFAR10/100, STL, Domain Net or other small dataset, use this
     """
     train_T=T.Compose([
-                    T.RandomResizedCrop(figsize,padding=4),
+                    T.Resize(figsize),
+                    T.RandomCrop(figsize, padding=4),
                     T.RandomHorizontalFlip(),
                     T.ToTensor(),
                     T.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
