@@ -26,10 +26,6 @@ def save_checkpoint(model, save_path, file_name='test'):
     file_path = os.path.join(save_path, file_name+'.pt')
     torch.save(model.state_dict(), file_path)
     
-def save_storetable(table, save_path, file_name='test'):
-    file_path = os.path.join(save_path, file_name+'.npy')
-    np.save(file_path, table.numpy())
-
 def rnd_seed(seed):
     random.seed(seed)
     np.random.seed(seed)

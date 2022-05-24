@@ -1,4 +1,6 @@
 #!/bin/bash
+#SBATCH -A NLP-CDT-SL2-CPU
+#SBATCH -p icelake-himem
 #SBATCH --job-name=stage1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
