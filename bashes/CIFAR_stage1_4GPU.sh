@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -A NLP-CDT-SL2-CPU
+#SBATCH -A NLP-CDT-SL2-GPU
 #SBATCH -p icelake-himem
 #SBATCH --job-name=stage1
 #SBATCH --ntasks=1
