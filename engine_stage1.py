@@ -76,7 +76,7 @@ def evaluate(data_loader, model, device, args):
 
         # compute output
         with torch.cuda.amp.autocast():
-            outputs = model(images)
+            _, outputs = model(images)
             if args.loss_type=='mse':
                 y_oht = F.one_hot(targets, num_classes=args.nb_class).reshape(-1,1)
                 loss = criterion(outputs.reshape(-1,1),y_oht.float())                
