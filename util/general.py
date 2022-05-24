@@ -60,9 +60,9 @@ def get_init_net(args, force_type=None):
         net_type = force_type
 
     if net_type=='resnet18':
-        net = ResNet18(args.nb_classes)
+        net = ResNet18(args.nb_classes, AB_split=args.AB_split)
     elif net_type=='resnet50':
-        net = ResNet50(args.nb_classes)
+        net = ResNet50(args.nb_classes, AB_split=args.AB_split)
     elif net_type=='efficientb3':
         from efficientnet_pytorch import EfficientNet
         net = EfficientNet.from_pretrained('efficientnet-b3', num_classes=args.nb_class)

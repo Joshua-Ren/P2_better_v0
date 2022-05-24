@@ -137,7 +137,7 @@ def ResNet152(num_classes, AB_split):
 
 
 def test():
-    net = ResNet18()
+    net = ResNet18(num_classes=10, AB_split=6)
     y = net(torch.randn(1, 3, 32, 32))
     print(y.size())
 

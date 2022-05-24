@@ -39,6 +39,8 @@ def get_args_parser():
                         help='Name of model to train')
     parser.add_argument('--figsize', default=32, type=int,
                         help='images input size, cifar is 32')
+    parser.add_argument('--AB_split', default=6, type=int,
+                        help='6: Bob only linear, 4: Bob has linear and pool+view, 3: Bob has linear+...+layer4,...')
 
     # Optimizer parameters
     parser.add_argument('--loss_type', type=str, default='ce',
