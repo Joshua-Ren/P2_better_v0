@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -A NLP-CDT-SL2-GPU
-#SBATCH -p icelake-himem
+#SBATCH -p ampere
 #SBATCH --job-name=stage1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
