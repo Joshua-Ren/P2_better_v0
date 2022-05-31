@@ -31,7 +31,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
             samples, targets = mixup_fn(samples, targets)
 
         with torch.cuda.amp.autocast():
-            outputs = model(samples)
+            _, outputs = model(samples)
             if args.loss_type=='mse':
                 y_oht = F.one_hot(targets, num_classes=args.nb_class).reshape(-1,1)
                 loss = criterion(outputs.reshape(-1,1),y_oht.float())                
@@ -82,7 +82,7 @@ def evaluate(data_loader, model, device,args, train_type='ft'):
 
         # compute output
         with torch.cuda.amp.autocast():
-            outputs = model(images)
+            _, outputs = model(images)
             if args.loss_type=='mse':
                 y_oht = F.one_hot(targets, num_classes=args.nb_class).reshape(-1,1)
                 loss = criterion(outputs.reshape(-1,1),y_oht.float())                
