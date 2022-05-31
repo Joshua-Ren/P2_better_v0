@@ -201,7 +201,7 @@ def main(args):
         optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
         for epoch in range(args.lp_epochs):
             train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')
-            evaluate(data_loader_val, model, args.device, train_type='lp')
+            evaluate(data_loader_val, model, args.device, args, train_type='lp')
             if epoch in args.lp_epoch_list:
                 _, bob_param = get_Alice_Bob_dict(model)
                 bob_param_dict[str(epoch)] = bob_param
@@ -219,7 +219,7 @@ def main(args):
             if True: #args.distributed:
                 data_loader_train.sampler.set_epoch(epoch)
             train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args)
-            vacc1, _ = evaluate(data_loader_val, model, args.device)
+            vacc1, _ = evaluate(data_loader_val, model, args.device, args)
             if vacc1 >= best_vacc1:
                 best_vacc1 = vacc1
         if misc.is_main_process():

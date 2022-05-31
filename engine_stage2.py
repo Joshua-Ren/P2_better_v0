@@ -69,7 +69,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
             wandb.log({'lp_train_top5':top5.avg})
             
 @torch.no_grad()
-def evaluate(data_loader, model, device,args, train_type='ft'):
+def evaluate(data_loader, model, device, args, train_type='ft'):
     losses = AverageMeter()
     top1 = AverageMeter()
     top5 = AverageMeter()
