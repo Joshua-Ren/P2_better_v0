@@ -69,10 +69,12 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
             wandb.log({'lp_train_top5':top5.avg})
             
 @torch.no_grad()
-def evaluate(data_loader, model, device, args, train_type='ft'):
+def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
     losses = AverageMeter()
     top1 = AverageMeter()
     top5 = AverageMeter()
+    ztz0_cos = AverageMeter()
+    ztz0_norm = AverageMeter()
     criterion = torch.nn.CrossEntropyLoss()
     model.eval()
 
@@ -82,7 +84,14 @@ def evaluate(data_loader, model, device, args, train_type='ft'):
 
         # compute output
         with torch.cuda.amp.autocast():
-            _, outputs = model(images)
+            zt, outputs = model(images)
+            if model0 is not None:
+                z0, _ = model0(images)
+                cos_dist = torch.nn.CosineSimilarity(dim=1)(z0,zt)
+                norm_dist = torch.norm(z0-zt, dim=1)
+                ztz0_cos.update(cos_dist.data.item(),images.size(0))
+                ztz0_norm.update(norm_dist.data.item(),images.size(0))
+
             if args.loss_type=='mse':
                 y_oht = F.one_hot(targets, num_classes=args.nb_class).reshape(-1,1)
                 loss = criterion(outputs.reshape(-1,1),y_oht.float())                
@@ -98,6 +107,9 @@ def evaluate(data_loader, model, device, args, train_type='ft'):
             wandb.log({'ft_valid_loss':losses.avg})
             wandb.log({'ft_valid_top1':top1.avg})
             wandb.log({'ft_valid_top5':top5.avg})
+            if model0 is not None:
+                wandb.log({'ztz0_cos':ztz0_cos.avg})
+                wandb.log({'ztz0_norm':ztz0_norm.avg})                
         elif train_type == 'lp':
             wandb.log({'lp_valid_loss':losses.avg})
             wandb.log({'lp_valid_top1':top1.avg})
