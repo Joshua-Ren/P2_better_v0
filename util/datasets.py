@@ -35,19 +35,19 @@ def build_dataset(is_train, args, force_dataset=None):
         dataset = ImageFolderLMDB(root, transform=transform)
     elif dataset_name=='stl10':
         if is_train:
-            dataset = torchvision.datasets.STL10('./data', split='train', download=True, transform=train_T)
+            dataset = torchvision.datasets.STL10('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/stl10', split='train', download=True, transform=train_T)
         else:
-            dataset = torchvision.datasets.STL10('./data', split='test', download=True, transform=val_T)
+            dataset = torchvision.datasets.STL10('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/stl10', split='test', download=True, transform=val_T)
     elif dataset_name=='cifar10':
         if is_train:
-            dataset = torchvision.datasets.CIFAR10('./data', train=True, download=True, transform=train_T)
+            dataset = torchvision.datasets.CIFAR10('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/cifar10', train=True, download=True, transform=train_T)
         else:
-            dataset = torchvision.datasets.CIFAR10('./data', train=False, download=True, transform=val_T)
+            dataset = torchvision.datasets.CIFAR10('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/cifar10', train=False, download=True, transform=val_T)
     elif dataset_name=='cifar100':
         if is_train:
-            dataset = torchvision.datasets.CIFAR100('./data', train=True, download=True, transform=train_T)
+            dataset = torchvision.datasets.CIFAR100('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/cifar100', train=True, download=True, transform=train_T)
         else:
-            dataset = torchvision.datasets.CIFAR100('./data', train=False, download=True, transform=val_T)
+            dataset = torchvision.datasets.CIFAR100('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/cifar100', train=False, download=True, transform=val_T)
     return dataset
 
 def get_std_transform(figsize=32):

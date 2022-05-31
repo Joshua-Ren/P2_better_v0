@@ -39,7 +39,7 @@ def get_Alice_Bob_dict(tmp_model):
     from collections import OrderedDict
     alice_dict = OrderedDict()
     bob_dict = OrderedDict()
-    for name, param in o.Alice.named_parameters():
+    for name, param in tmp_model.Alice.named_parameters():
         alice_dict[name] = param
     for name, param in tmp_model.Bob.named_parameters():
         bob_dict[name] = param
