@@ -9,6 +9,7 @@ import os
 import time
 from pathlib import Path
 import models
+import copy
 
 import torch
 import torch.backends.cudnn as cudnn
@@ -32,15 +33,22 @@ def get_args_parser():
     parser = argparse.ArgumentParser('Stage2 linear prob and finetune', add_help=False)
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * # gpus')
-    parser.add_argument('--epochs', default=200, type=int)
+    parser.add_argument('--ft_epochs', default=200, type=int)
+    parser.add_argument('--lp_epochs', default=200, type=int)
     parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 4, 8, 16, 32, 64, 128, 200], type=list,
                         help='which vector_ep we select for the FT phase')
+
+    # Pretrain checkpoint
+    parser.add_argument('--ckp_dir', default='./results/P2-pretrain/C10_fs32_ce/ep_199.pt',
+                        help='path of the pretrained checkpoint')
 
     # Model parameters
     parser.add_argument('--model', default='resnet18', type=str, metavar='MODEL',
                         help='Name of model to train')
     parser.add_argument('--figsize', default=32, type=int,
                         help='images input size, cifar is 32')
+    parser.add_argument('--AB_split', default=6, type=int,
+                        help='6: Bob only linear, 4: Bob has linear and pool+view, 3: Bob has linear+...+layer4,...')
 
     # Optimizer parameters
     parser.add_argument('--loss_type', type=str, default='ce',
@@ -49,7 +57,7 @@ def get_args_parser():
                         help='can be sgd or adam')
     parser.add_argument('--lr', type=float, default=None, metavar='LR',
                         help='learning rate (absolute lr)')
-    parser.add_argument('--blr', type=float, default=1e-2, metavar='LR',
+    parser.add_argument('--blr', type=float, default=5e-4, metavar='LR',
                         help='base learning rate: absolute_lr = base_lr * total_batch_size / 256')
     #parser.add_argument('--clip_grad', type=float, default=10, metavar='NORM',
     #                    help='Clip gradient norm (default: None, no clipping)')
@@ -79,13 +87,13 @@ def get_args_parser():
                         help='How to apply mixup/cutmix params. Per "batch", "pair", or "elem"')
 
     # Dataset parameters
-    parser.add_argument('--dataset', default='cifar10', type=str,
-                        help='can be cifar10, cifar100, imagenet, domainnet')    
+    parser.add_argument('--dataset', default='stl10', type=str,
+                        help='can be cifar10, stl10, cifar100, imagenet, domainnet')    
     parser.add_argument('--nb_classes', default=10, type=int,
                         help='number of the classification types')
                         
     parser.add_argument('--run_name',default=None,type=str)
-    parser.add_argument('--proj_name',default='P2-pretrain', type=str)
+    parser.add_argument('--proj_name',default='P2-LP_FT', type=str)
     
     parser.add_argument('--output_dir', default='./',
                         help='path where to save, like in another disk. Default is the current disk')
@@ -93,7 +101,7 @@ def get_args_parser():
                         help='device to use for training / testing')
     parser.add_argument('--seed', default=0, type=int)
 
-    parser.add_argument('--num_workers', default=10, type=int)
+    parser.add_argument('--num_workers', default=4, type=int)
     parser.add_argument('--pin_mem', action='store_true',
                         help='Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.')
     parser.add_argument('--no_pin_mem', action='store_false', dest='pin_mem')
@@ -167,38 +175,14 @@ def main(args):
             prob=args.mixup_prob, switch_prob=args.mixup_switch_prob, mode=args.mixup_mode,
             label_smoothing=args.smoothing, num_classes=args.nb_classes)
     
-    # ================== Create the model ==================
-    model = get_init_net(args)
-    """
-            # ----- Load the checkpoint
-    if args.finetune and not args.eval:
-        ckp_path = base_folder + 'results/' + args.finetune
-        #ckp_path = base_folder+'results/Interact_MAE/mae_vit_base_patch16_smallde/offi_4GPU_smallDE400/checkpoint-300.pth'
-        checkpoint = torch.load(ckp_path, map_location='cpu')
-        checkpoint_model = checkpoint['model']
-        state_dict = model.state_dict()
-        for k in ['head.weight', 'head.bias']:
-            if k in checkpoint_model and checkpoint_model[k].shape != state_dict[k].shape:
-                print(f"Removing key {k} from pretrained checkpoint")
-                del checkpoint_model[k]
+    # ================== Create the model and copy alice parameters ==================
+    seed_model = get_init_net(args)
+    load_checkpoint(args, seed_model, args.ckp_dir, which_part='alice')
 
-        # load pre-trained model
-        msg = model.load_state_dict(checkpoint_model, strict=False)
-        print(msg)
-        trunc_normal_(model.head.weight, std=2e-5)
-    """
-    model.to(args.device)
-    model_without_ddp = model
-    if True: #args.distributed:
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
-        model_without_ddp = model.module
-
+    # ================== Get some common settings ==================
     eff_batch_size = args.batch_size * misc.get_world_size()
     if args.lr is None:  # only base_lr is specified
         args.lr = args.blr * eff_batch_size / 256
-
-    optimizer, scheduler = get_optimizer(model, args)
-
     if mixup_fn is not None:
         # smoothing is handled with mixup label transform
         criterion = SoftTargetCrossEntropy()
@@ -208,16 +192,40 @@ def main(args):
         criterion = torch.nn.CrossEntropyLoss()
     if args.loss_type=='mse':
         criterion = torch.nn.MSELoss()
-    print("criterion = %s" % str(criterion))
 
-    for epoch in range(args.epochs):
+    # ================== LP Bob part, save dict for args.lp_epoch_list, use single GPU
+    model = copy.deepcopy(seed_model)
+    model.to(args.device)
+    bob_param_dict = {}
+    if misc.is_main_process():
+        optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
+        for epoch in range(args.lp_epochs):
+            train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')
+            evaluate(data_loader_val, model, args.device, train_type='lp')
+            if epoch in args.lp_epoch_list:
+                _, bob_param = get_Alice_Bob_dict(model)
+                bob_param_dict[str(epoch)] = bob_param
+
+    # ================== FT all parts, use multiple GPUs
+    for key in bob_param_dict.keys():
+        bob_param = bob_param_dict[key]
+        model = copy.deepcopy(seed_model)
+        model.Bob.load_state_dict(bob_param,strict=False)
         if True: #args.distributed:
-            data_loader_train.sampler.set_epoch(epoch)
-        train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args)
-        evaluate(data_loader_val, model, args.device)
-
-    if True:
-        save_checkpoint(model, save_path, file_name='ep_'+str(epoch))
+            model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
+        optimizer, scheduler = get_optimizer(model, args)
+        best_vacc1 = 0
+        for epoch in range(args.ft_epochs):
+            if True: #args.distributed:
+                data_loader_train.sampler.set_epoch(epoch)
+            train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args)
+            vacc1, _ = evaluate(data_loader_val, model, args.device)
+            if vacc1 >= best_vacc1:
+                best_vacc1 = vacc1
+        if misc.is_main_process():
+            wandb.log({'ft_last':vacc1})
+            wandb.log({'ft_best':best_vacc1})
+            wandb.log({'ft_bob_ep':int(key)})
 
 if __name__ == '__main__':
     args = get_args_parser()

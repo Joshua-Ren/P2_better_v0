@@ -22,10 +22,6 @@ import sys
 sys.path.append("..")
 from models import *
 
-def save_checkpoint(model, save_path, file_name='test'):
-    file_path = os.path.join(save_path, file_name+'.pt')
-    torch.save(model.state_dict(), file_path)
-    
 def rnd_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
@@ -33,6 +29,42 @@ def rnd_seed(seed):
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
+
+# ========= Functions about the checkpoint
+def save_checkpoint(model, save_path, file_name='test'):
+    file_path = os.path.join(save_path, file_name+'.pt')
+    torch.save(model.state_dict(), file_path)
+    
+def get_Alice_Bob_dict(tmp_model):
+    from collections import OrderedDict
+    alice_dict = OrderedDict()
+    bob_dict = OrderedDict()
+    for name, param in o.Alice.named_parameters():
+        alice_dict[name] = param
+    for name, param in tmp_model.Bob.named_parameters():
+        bob_dict[name] = param
+    return alice_dict, bob_dict
+
+def load_checkpoint(args, model, ckp_path, which_part='all'):
+    '''
+        Use this to load params of specific part (Alice, Bob or all),
+        from ckp to model.
+    '''
+    if which_part.lower()=='all':
+        model.load_state_dict(torch.load(ckp_path))
+    elif which_part.lower()=='alice':
+        tmp_model = get_init_net(args)
+        tmp_model.load_state_dict(torch.load(ckp_path))
+        alice_dict, _ = get_Alice_Bob_dict(tmp_model)
+        model.Alice.load_state_dict(alice_dict,strict=False)
+    elif which_part.lower()=='bob':
+        tmp_model = get_init_net(args)
+        tmp_model.load_state_dict(torch.load(ckp_path))
+        _, bob_dict = get_Alice_Bob_dict(tmp_model)
+        model.Bob.load_state_dict(bob_dict,strict=False)
+    else:
+        print('which_part must be alice, bob, or all')      
+
 
 # =========== wandb functions =================
 def wandb_init(proj_name='test', run_name=None, config_args=None):
@@ -111,3 +143,16 @@ def accuracy(output, target, topk=(1,)):
         correct_k = correct[:k].reshape(-1).float().sum(0, keepdim=True)
         res.append(correct_k.mul_(100.0 / batch_size))
     return res
+
+"""
+def save_checkpoint(model, save_path, file_name='test', which_part='all'):
+    file_path = os.path.join(save_path, file_name+'.pt')
+    if which_part.lower()=='alice':
+        torch.save(model.Alice.state_dict(), file_path)
+    elif which_part.lower()=='bob':
+        torch.save(model.Bob.state_dict(), file_path)
+    elif which_part.lower()=='all':
+        torch.save(model.state_dict(), file_path)
+    else:
+        torch.save(model.state_dict(), file_path)
+"""

@@ -14,11 +14,10 @@ from timm.utils import accuracy
 from util.general import *
 import util.misc as misc
 
-
 def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
                     data_loader: Iterable, optimizer: torch.optim.Optimizer, 
                     scheduler:torch.optim.lr_scheduler, epoch: int, 
-                    mixup_fn: Optional[Mixup] = None, args=None):
+                    mixup_fn: Optional[Mixup] = None, args=None, train_type='ft'):
     losses = AverageMeter()
     top1 = AverageMeter()
     top5 = AverageMeter()
@@ -56,14 +55,21 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
     top1.update(prec1.item(), samples.size(0))
     top5.update(prec5.item(), samples.size(0))   
     if misc.is_main_process():
-        wandb.log({'epoch':epoch})         
-        wandb.log({'learn_rate':lr})
-        wandb.log({'train_loss':losses.avg})
-        wandb.log({'train_top1':top1.avg})
-        wandb.log({'train_top5':top5.avg})
+        if train_type == 'ft':
+            wandb.log({'ft_epoch':epoch})         
+            wandb.log({'ft_learn_rate':lr})
+            wandb.log({'ft_train_loss':losses.avg})
+            wandb.log({'ft_train_top1':top1.avg})
+            wandb.log({'ft_train_top5':top5.avg})
+        elif train_type == 'lp':
+            wandb.log({'lp_epoch':epoch})         
+            wandb.log({'lp_learn_rate':lr})
+            wandb.log({'lp_train_loss':losses.avg})
+            wandb.log({'lp_train_top1':top1.avg})
+            wandb.log({'lp_train_top5':top5.avg})
             
 @torch.no_grad()
-def evaluate(data_loader, model, device,args):
+def evaluate(data_loader, model, device,args, train_type='ft'):
     losses = AverageMeter()
     top1 = AverageMeter()
     top5 = AverageMeter()
@@ -88,7 +94,12 @@ def evaluate(data_loader, model, device,args):
         top5.update(prec5.item(), images.size(0))
         
     if misc.is_main_process():
-        wandb.log({'valid_loss':losses.avg})
-        wandb.log({'valid_top1':top1.avg})
-        wandb.log({'valid_top5':top5.avg})
+        if train_type == 'ft':
+            wandb.log({'ft_valid_loss':losses.avg})
+            wandb.log({'ft_valid_top1':top1.avg})
+            wandb.log({'ft_valid_top5':top5.avg})
+        elif train_type == 'lp':
+            wandb.log({'lp_valid_loss':losses.avg})
+            wandb.log({'lp_valid_top1':top1.avg})
+            wandb.log({'lp_valid_top5':top5.avg})           
     return top1.avg, top5.avg
