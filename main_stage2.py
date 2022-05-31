@@ -210,8 +210,8 @@ def main(args):
     del model
     torch.cuda.synchronize()
 
-    #_, bob_param = get_Alice_Bob_dict(model)
-    #bob_param_dict['1'] = bob_param
+    _, bob_param = get_Alice_Bob_dict(model)
+    bob_param_dict['1'] = bob_param
 
     # ================== FT all parts, use multiple GPUs
     for key in bob_param_dict.keys():
