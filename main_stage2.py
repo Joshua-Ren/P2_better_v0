@@ -206,6 +206,7 @@ def main(args):
                 _, bob_param = get_Alice_Bob_dict(model)
                 bob_param_dict[str(epoch)] = bob_param
 
+    torch.cuda.synchronize()
     # ================== FT all parts, use multiple GPUs
     for key in bob_param_dict.keys():
         bob_param = bob_param_dict[key]
