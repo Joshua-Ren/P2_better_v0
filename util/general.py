@@ -70,7 +70,7 @@ def load_checkpoint(args, model, ckp_path, which_part='all'):
 def wandb_init(proj_name='test', run_name=None, config_args=None):
     wandb.init(
         project=proj_name,
-        config={})
+        config={}, entity="joshuaren")
     if config_args is not None:
         wandb.config.update(config_args)
     if run_name is not None:
