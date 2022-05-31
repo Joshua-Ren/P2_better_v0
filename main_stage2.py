@@ -207,21 +207,20 @@ def main(args):
                 _, bob_param = get_Alice_Bob_dict(model.module)
                 bob_param_dict[str(epoch)] = bob_param
     del model
+
     # ================== FT all parts, use multiple GPUs
     for key in bob_param_dict.keys():
         bob_param = bob_param_dict[key]
-        model = copy.deepcopy(seed_model)
-        model.to(args.device)
-        model.Bob.load_state_dict(bob_param,strict=False)
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
-        optimizer, scheduler = get_optimizer(model, args)
+        model2 = copy.deepcopy(seed_model)
+        model2.to(args.device)
+        model2.Bob.load_state_dict(bob_param,strict=False)
+        model2 = torch.nn.parallel.DistributedDataParallel(model2, device_ids=[args.gpu])
+        optimizer, scheduler = get_optimizer(model2, args)
         best_vacc1 = 0
         for epoch in range(args.ft_epochs):
             print(epoch,end='-')
-            if True: #args.distributed:
-                data_loader_train.sampler.set_epoch(epoch)
-            train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')
-            vacc1, _ = evaluate(data_loader_val, model, args.device, args, train_type='ft')
+            train_one_epoch(model2, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')
+            vacc1, _ = evaluate(data_loader_val, model2, args.device, args, train_type='ft')
             if vacc1 >= best_vacc1:
                 best_vacc1 = vacc1
         if misc.is_main_process():
