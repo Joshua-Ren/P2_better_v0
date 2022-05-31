@@ -93,7 +93,7 @@ def get_args_parser():
                         help='number of the classification types')
                         
     parser.add_argument('--run_name',default=None,type=str)
-    parser.add_argument('--proj_name',default='P2-LP_FT', type=str)
+    parser.add_argument('--proj_name',default='LP-FT-main', type=str)
     
     parser.add_argument('--output_dir', default='./',
                         help='path where to save, like in another disk. Default is the current disk')

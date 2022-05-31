@@ -85,7 +85,7 @@ def get_args_parser():
                         help='number of the classification types')
                         
     parser.add_argument('--run_name',default=None,type=str)
-    parser.add_argument('--proj_name',default='P2-pretrain', type=str)
+    parser.add_argument('--proj_name',default='LP-FT-pretrain', type=str)
     
     parser.add_argument('--output_dir', default='./', type=str,
                         help='path where to save, like in another disk. Default is the current disk')
