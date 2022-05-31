@@ -199,7 +199,7 @@ def main(args):
     bob_param_dict = {}
     if misc.is_main_process():
         optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
-        for epoch in range(args.lp_epochs):
+        for epoch in range(5):#range(args.lp_epochs):
             train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')
             evaluate(data_loader_val, model, args.device, args, train_type='lp')
             if epoch in args.lp_epoch_list:
@@ -217,10 +217,11 @@ def main(args):
         optimizer, scheduler = get_optimizer(model, args)
         best_vacc1 = 0
         for epoch in range(args.ft_epochs):
+            print(epoch,end='-')
             if True: #args.distributed:
                 data_loader_train.sampler.set_epoch(epoch)
-            train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args)
-            vacc1, _ = evaluate(data_loader_val, model, args.device, args)
+            train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')
+            vacc1, _ = evaluate(data_loader_val, model, args.device, args, train_type='ft')
             if vacc1 >= best_vacc1:
                 best_vacc1 = vacc1
         if misc.is_main_process():
