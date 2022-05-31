@@ -33,9 +33,9 @@ def get_args_parser():
     parser = argparse.ArgumentParser('Stage2 linear prob and finetune', add_help=False)
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * # gpus')
-    parser.add_argument('--ft_epochs', default=200, type=int)
-    parser.add_argument('--lp_epochs', default=200, type=int)
-    parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 4, 8, 16, 32, 64, 128, 200], type=list,
+    parser.add_argument('--ft_epochs', default=100, type=int)
+    parser.add_argument('--lp_epochs', default=100, type=int)
+    parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 4, 8, 16, 32, 64, 100], type=list,
                         help='which vector_ep we select for the FT phase')
 
     # Pretrain checkpoint
@@ -210,6 +210,7 @@ def main(args):
     for key in bob_param_dict.keys():
         bob_param = bob_param_dict[key]
         model = copy.deepcopy(seed_model)
+        model.to(args.device)
         model.Bob.load_state_dict(bob_param,strict=False)
         if True: #args.distributed:
             model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
