@@ -105,10 +105,10 @@ def get_init_net(args, force_type=None):
 def get_optimizer(model, args):
     if args.optim_type.lower()=='sgd':
         optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9,weight_decay=args.weight_decay,nesterov=True)
-        scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=args.min_lr)
+        scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.ft_epochs, eta_min=args.min_lr)
     elif args.optim_type.lower()=='adam':
         optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-        scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=args.min_lr)
+        scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.ft_epochs, eta_min=args.min_lr)
     return optimizer, scheduler
 
 # =========== Track the results ==================

@@ -32,7 +32,7 @@ def get_args_parser():
     parser = argparse.ArgumentParser('Stage1 generate pretrain checkpoint', add_help=False)
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * # gpus')
-    parser.add_argument('--epochs', default=200, type=int)
+    parser.add_argument('--ft_epochs', default=200, type=int)
 
     # Model parameters
     parser.add_argument('--model', default='resnet18', type=str, metavar='MODEL',
@@ -212,7 +212,7 @@ def main(args):
         criterion = torch.nn.MSELoss()
     print("criterion = %s" % str(criterion))
 
-    for epoch in range(args.epochs):
+    for epoch in range(args.ft_epochs):
         if True: #args.distributed:
             data_loader_train.sampler.set_epoch(epoch)
         train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args)
