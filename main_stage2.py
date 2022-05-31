@@ -213,7 +213,7 @@ def main(args):
         bob_param = bob_param_dict[key]
         model2 = copy.deepcopy(seed_model)
         model2.to(args.device)
-        #model2.Bob.load_state_dict(bob_param,strict=False)
+        model2.Bob.load_state_dict(bob_param,strict=False)
         model2 = torch.nn.parallel.DistributedDataParallel(model2, device_ids=[args.gpu])
         optimizer, scheduler = get_optimizer(model2, args)
         best_vacc1 = 0

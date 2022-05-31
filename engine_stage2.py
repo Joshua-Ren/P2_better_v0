@@ -29,7 +29,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
 
         if mixup_fn is not None:
             samples, targets = mixup_fn(samples, targets)
-
+        print('what happen')
         with torch.cuda.amp.autocast():
             _, outputs = model(samples)
             if args.loss_type=='mse':
