@@ -198,7 +198,7 @@ def main(args):
     model = copy.deepcopy(seed_model)
     model.to(args.device)
     model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
-    optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
+    optim_bob, scheduler_bob = get_optimizer(model.module.Bob, args)
     for epoch in range(5):#range(args.lp_epochs):
         train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')
         evaluate(data_loader_val, model, args.device, args, train_type='lp')
