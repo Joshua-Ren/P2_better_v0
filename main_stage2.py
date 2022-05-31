@@ -206,15 +206,14 @@ def main(args):
             if epoch in args.lp_epoch_list:
                 _, bob_param = get_Alice_Bob_dict(model.module)
                 bob_param_dict[str(epoch)] = bob_param
-
+    del model
     # ================== FT all parts, use multiple GPUs
     for key in bob_param_dict.keys():
         bob_param = bob_param_dict[key]
         model = copy.deepcopy(seed_model)
         model.to(args.device)
         model.Bob.load_state_dict(bob_param,strict=False)
-        if True: #args.distributed:
-            model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
         optimizer, scheduler = get_optimizer(model, args)
         best_vacc1 = 0
         for epoch in range(args.ft_epochs):
