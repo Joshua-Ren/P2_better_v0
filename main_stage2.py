@@ -204,7 +204,7 @@ def main(args):
         evaluate(data_loader_val, model, args.device, args, train_type='lp')
         if misc.is_main_process():
             if epoch in args.lp_epoch_list:
-                _, bob_param = get_Alice_Bob_dict(model)
+                _, bob_param = get_Alice_Bob_dict(model.module)
                 bob_param_dict[str(epoch)] = bob_param
 
     # ================== FT all parts, use multiple GPUs
