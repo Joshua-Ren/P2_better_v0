@@ -197,23 +197,21 @@ def main(args):
     
     bob_param_dict = {}
     model = copy.deepcopy(seed_model)
-    '''
     model.to(args.device)
-    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
-    optim_bob, scheduler_bob = get_optimizer(model.module.Bob, args)
+    #model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
+    optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
     for epoch in range(5):#range(args.lp_epochs):
         train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')
         evaluate(data_loader_val, model, args.device, args, train_type='lp')
         if misc.is_main_process():
             if epoch in args.lp_epoch_list:
-                _, bob_param = get_Alice_Bob_dict(model.module)
+                _, bob_param = get_Alice_Bob_dict(model)
                 bob_param_dict[str(epoch)] = bob_param
     del model
     torch.cuda.synchronize()
-    '''
 
-    _, bob_param = get_Alice_Bob_dict(model)
-    bob_param_dict['1'] = bob_param
+    #_, bob_param = get_Alice_Bob_dict(model)
+    #bob_param_dict['1'] = bob_param
 
     # ================== FT all parts, use multiple GPUs
     for key in bob_param_dict.keys():
