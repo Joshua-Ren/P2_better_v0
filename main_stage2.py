@@ -26,7 +26,7 @@ from util.datasets import build_dataset
 #from util.pos_embed import interpolate_pos_embed
 from util.misc import NativeScalerWithGradNormCount as NativeScaler
 
-from engine_stage1 import train_one_epoch, evaluate
+from engine_stage2 import train_one_epoch, evaluate
 
 
 def get_args_parser():
