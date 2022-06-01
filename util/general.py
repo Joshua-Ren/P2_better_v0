@@ -30,6 +30,17 @@ def rnd_seed(seed):
         torch.cuda.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
 
+def sort_files(file_list):
+    index_list = []
+    for f in file_list:
+        bob_ep = f.split('.')[0].split('_')[-1]
+        index_list.append(int(bob_ep))
+    sort_mask = np.argsort(np.array(index_list))
+    new_file_list = []
+    for idx in sort_mask:
+        new_file_list.append(file_list[idx])
+    return new_file_list
+
 # ========= Functions about the checkpoint
 def save_checkpoint(model, save_path, file_name='test'):
     file_path = os.path.join(save_path, file_name+'.pt')

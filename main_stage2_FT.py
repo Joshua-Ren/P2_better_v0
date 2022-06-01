@@ -192,27 +192,31 @@ def main(args):
     # ================== FT all parts, use multiple GPUs
         # ----- Get all checkpoints for Bob
     bob_ckp_folder = os.path.join(args.work_dir, args.LP_dir)
-    file_list = os.listdir(bob_ckp_folder)
-    for f in file_list:
-        bob_ep = f.split('.')[0].split('_')[-1]
-        bob_path = os.path.join(bob_ckp_folder, f)
+    file_list = sort_files(os.listdir(bob_ckp_folder))
 
-        model2 = copy.deepcopy(seed_model)
-        model2.to(args.device)
-        model2.Bob.load_state_dict(torch.load(bob_path),strict=False)
-        model2 = torch.nn.parallel.DistributedDataParallel(model2, device_ids=[args.gpu])
-        optimizer, scheduler = get_optimizer(model2, args)
+    for i in range(len(file_list)+1):
+        modelt = copy.deepcopy(seed_model)
+        modelt.to(args.device)
+        if i>0:
+            bob_ep = 0
+        else:
+            f = file_list[i-1]
+            bob_ep = int(f.split('.')[0].split('_')[-1])+1
+            bob_path = os.path.join(bob_ckp_folder, f)
+            modelt.Bob.load_state_dict(torch.load(bob_path),strict=False)
+        model0 = copy.deepcopy(modelt)
+        modelt = torch.nn.parallel.DistributedDataParallel(modelt, device_ids=[args.gpu])
+        optimizer, scheduler = get_optimizer(modelt, args)
         best_vacc1 = 0
         for epoch in range(args.ft_epochs):
-            print(epoch,end='-')
-            train_one_epoch(model2, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')
-            vacc1, _ = evaluate(data_loader_val, model2, args.device, args, train_type='ft')
+            train_one_epoch(modelt, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')
+            vacc1, _ = evaluate(data_loader_val, modelt, args.device, args, model0=model0, train_type='ft')
             if vacc1 >= best_vacc1:
                 best_vacc1 = vacc1
         if misc.is_main_process():
             wandb.log({'ft_last':vacc1})
             wandb.log({'ft_best':best_vacc1})
-            wandb.log({'ft_bob_ep':int(bob_ep)})
+            wandb.log({'ft_bob_ep':bob_ep})
 
 if __name__ == '__main__':
     args = get_args_parser()

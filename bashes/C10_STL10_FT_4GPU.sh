@@ -25,4 +25,6 @@ cd /home/sg955/GitWS/P2_better_v0/
 srun python -m torch.distributed.launch --nproc_per_node=4 --master_port 1086 main_stage2.py \
 --batch_size 128  \
 --dataset stl10 --figsize 32 --loss_type ce \
---run_name C10_STL10
+--work_dir ./results/C10_fs32_ce/ \
+--LP_dir STL10 \
+--run_name C10_STL10_FT
