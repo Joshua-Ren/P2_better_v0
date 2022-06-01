@@ -25,5 +25,6 @@ cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_stage2_LP.py \
 --batch_size 128  --dataset stl10 --figsize 32 --loss_type ce \
+--blr 0.0001
 --work_dir ./results/C10_fs32_ce/ \
---run_name STL10_LP
+--run_name STL10_LP_slr
