@@ -197,7 +197,7 @@ def main(args):
     for i in range(len(file_list)+1):
         modelt = copy.deepcopy(seed_model)
         modelt.to(args.device)
-        if i>0:
+        if i==0:
             bob_ep = 0
         else:
             f = file_list[i-1]
