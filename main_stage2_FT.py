@@ -191,7 +191,7 @@ def main(args):
 
     # ================== FT all parts, use multiple GPUs
         # ----- Get all checkpoints for Bob
-    
+    bob_ckp_folder = os.join.path()
 
 
 

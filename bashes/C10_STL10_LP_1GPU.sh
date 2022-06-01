@@ -2,6 +2,7 @@
 #SBATCH -A NLP-CDT-SL2-GPU
 #SBATCH -p ampere
 #SBATCH --job-name=stage2_lp
+#SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --time=36:00:00
