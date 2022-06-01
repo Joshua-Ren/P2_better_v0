@@ -26,5 +26,5 @@ srun python -m torch.distributed.launch --nproc_per_node=4 --master_port 1086 ma
 --batch_size 128  \
 --dataset stl10 --figsize 32 --loss_type ce \
 --work_dir ./results/C10_fs32_ce/ \
---LP_dir STL10_slr \
---run_name C10_STL10slr_FT
+--LP_dir STL10_hlr \
+--run_name C10_STL10hlr_FT
