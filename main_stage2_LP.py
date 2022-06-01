@@ -34,7 +34,9 @@ def get_args_parser():
                         help='Batch size per GPU (effective batch size is batch_size * # gpus')
     parser.add_argument('--ft_epochs', default=100, type=int)
     parser.add_argument('--lp_epochs', default=100, type=int)
-    parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 4, 8, 16, 32, 64, 99], type=list,
+    #parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 4, 8, 16, 32, 64, 99], type=list,
+    #                    help='which vector_ep we select for the FT phase')
+    parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 20, 24, 32, 40, 48, 64, 72, 99], type=list,
                         help='which vector_ep we select for the FT phase')
 
     # Pretrain checkpoint
