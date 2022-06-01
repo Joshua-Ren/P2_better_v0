@@ -22,7 +22,7 @@ source /home/sg955/functorch-env/bin/activate
 
 cd /home/sg955/GitWS/P2_better_v0/
 
-srun python -m torch.distributed.launch --nproc_per_node=4 --master_port 1086 main_stage2.py \
+srun python -m torch.distributed.launch --nproc_per_node=4 --master_port 1086 main_stage2_FT.py \
 --batch_size 128  \
 --dataset stl10 --figsize 32 --loss_type ce \
 --work_dir ./results/C10_fs32_ce/ \
