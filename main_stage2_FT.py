@@ -38,6 +38,8 @@ def get_args_parser():
     # Pretrain checkpoint
     parser.add_argument('--work_dir', default='./results/C10_fs32_ce/',
                         help='path of the pretrained checkpoint')
+    parser.add_argument('--LP_dir', default='STL10', type=str,
+                        help='Under work-dir, which LP dir we choose')
 
     # Model parameters
     parser.add_argument('--model', default='resnet18', type=str, metavar='MODEL',
@@ -192,7 +194,7 @@ def main(args):
     
 
 
-    
+
     for key in bob_param_dict.keys():
         bob_param = bob_param_dict[key]
         model2 = copy.deepcopy(seed_model)

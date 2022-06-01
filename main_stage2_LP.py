@@ -40,8 +40,6 @@ def get_args_parser():
     # Pretrain checkpoint
     parser.add_argument('--work_dir', default='./results/C10_fs32_ce/',
                         help='path of the pretrained checkpoint')
-    parser.add_argument('--LP_dir', defalut='STL10',
-                        help='Under work-dir, which LP dir we choose')
 
     # Model parameters
     parser.add_argument('--model', default='resnet18', type=str, metavar='MODEL',
