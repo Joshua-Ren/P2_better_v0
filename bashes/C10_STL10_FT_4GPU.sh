@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -A NLP-CDT-SL2-GPU
 #SBATCH -p ampere
-#SBATCH --job-name=stage2
+#SBATCH --job-name=stage2_ft
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --time=36:00:00
@@ -26,5 +26,5 @@ srun python -m torch.distributed.launch --nproc_per_node=4 --master_port 1086 ma
 --batch_size 128  \
 --dataset stl10 --figsize 32 --loss_type ce \
 --work_dir ./results/C10_fs32_ce/ \
---LP_dir STL10 \
---run_name C10_STL10_FT
+--LP_dir STL10_blr \
+--run_name C10_STL10blr_FT
