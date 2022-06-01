@@ -86,10 +86,10 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
             zt, outputs = model(images)
             if model0 is not None:
                 z0, _ = model0(images)
-                cos_dist = torch.nn.CosineSimilarity(dim=1)(z0,zt)
-                norm_dist = torch.norm(z0-zt, dim=1)
-                ztz0_cos.update(cos_dist.item(),images.size(0))
-                ztz0_norm.update(norm_dist.item(),images.size(0))
+                cos_dist = torch.nn.CosineSimilarity(dim=1)(z0,zt).detach().mean()
+                norm_dist = torch.norm(z0-zt, dim=1).detach().mean()
+                ztz0_cos.update(cos_dist,images.size(0))
+                ztz0_norm.update(norm_dist,images.size(0))
 
             if args.loss_type=='mse':
                 y_oht = F.one_hot(targets, num_classes=args.nb_class).reshape(-1,1)
