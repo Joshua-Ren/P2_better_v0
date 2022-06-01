@@ -40,6 +40,8 @@ def get_args_parser():
     # Pretrain checkpoint
     parser.add_argument('--work_dir', default='./results/C10_fs32_ce/',
                         help='path of the pretrained checkpoint')
+    parser.add_argument('--LP_dir', defalut='STL10',
+                        help='Under work-dir, which LP dir we choose')
 
     # Model parameters
     parser.add_argument('--model', default='resnet18', type=str, metavar='MODEL',
@@ -153,7 +155,7 @@ def main(args):
     
     # ================== Create the model and copy alice parameters ==================
     seed_model = get_init_net(args)
-    ckp_path = args.word_dir + 'pretrain.pt'
+    ckp_path = args.work_dir + 'pretrain.pt'
     load_checkpoint(args, seed_model, ckp_path, which_part='alice')
 
     # ================== Get some common settings ==================

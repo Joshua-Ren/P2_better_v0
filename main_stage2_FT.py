@@ -34,12 +34,9 @@ def get_args_parser():
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * # gpus')
     parser.add_argument('--ft_epochs', default=100, type=int)
-    parser.add_argument('--lp_epochs', default=100, type=int)
-    parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 4, 8, 16, 32, 64, 100], type=list,
-                        help='which vector_ep we select for the FT phase')
 
     # Pretrain checkpoint
-    parser.add_argument('--ckp_dir', default='./results/P2-pretrain/C10_fs32_ce/ep_199.pt',
+    parser.add_argument('--work_dir', default='./results/C10_fs32_ce/',
                         help='path of the pretrained checkpoint')
 
     # Model parameters
@@ -144,10 +141,6 @@ def main(args):
     # =================== Initialize wandb ========================
     if misc.is_main_process():
         run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
-        save_path = args.output_dir + '/results/'+args.proj_name+'/'+run_name
-        args.output_dir = save_path
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
 
     # ================== Prepare for the dataloader ===============
     data_loader_train = torch.utils.data.DataLoader(
@@ -177,7 +170,8 @@ def main(args):
     
     # ================== Create the model and copy alice parameters ==================
     seed_model = get_init_net(args)
-    load_checkpoint(args, seed_model, args.ckp_dir, which_part='alice')
+    ckp_path = args.word_dir + 'pretrain.pt'
+    load_checkpoint(args, seed_model, ckp_path, which_part='alice')
 
     # ================== Get some common settings ==================
     eff_batch_size = args.batch_size * misc.get_world_size()
@@ -193,27 +187,12 @@ def main(args):
     if args.loss_type=='mse':
         criterion = torch.nn.MSELoss()
 
-    # ================== LP Bob part, save dict for args.lp_epoch_list
-    
-    bob_param_dict = {}
-    model = copy.deepcopy(seed_model)
-    model.to(args.device)
-    #model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
-    optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
-    for epoch in range(5):#range(args.lp_epochs):
-        train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')
-        evaluate(data_loader_val, model, args.device, args, train_type='lp')
-        if misc.is_main_process():
-            if epoch in args.lp_epoch_list:
-                _, bob_param = get_Alice_Bob_dict(model)
-                bob_param_dict[str(epoch)] = bob_param
-    del model
-    torch.cuda.synchronize()
-
-    _, bob_param = get_Alice_Bob_dict(model)
-    bob_param_dict['1'] = bob_param
-
     # ================== FT all parts, use multiple GPUs
+        # ----- Get all checkpoints for Bob
+    
+
+
+    
     for key in bob_param_dict.keys():
         bob_param = bob_param_dict[key]
         model2 = copy.deepcopy(seed_model)
