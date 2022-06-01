@@ -87,10 +87,8 @@ def get_args_parser():
     parser.add_argument('--run_name',default=None,type=str)
     parser.add_argument('--proj_name',default='LP-FT-pretrain', type=str)
     
-    parser.add_argument('--output_dir', default='./', type=str,
-                        help='path where to save, like in another disk. Default is the current disk')
-    parser.add_argument('--save_path', default=None, type=str,
-                        help='path where to save, like in another disk. Default is the current disk')
+    parser.add_argument('--work_dir', default='./results/',
+                        help='path of the pretrained checkpoint')
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
     parser.add_argument('--seed', default=0, type=int)
@@ -138,7 +136,7 @@ def main(args):
     # =================== Initialize wandb ========================
     if misc.is_main_process():
         run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
-        save_path = args.output_dir + '/results/'+args.proj_name+'/'+run_name
+        save_path = os.path.join(args.work_dir, run_name)
         args.save_path = save_path
         if not os.path.exists(save_path):
             os.makedirs(save_path)
@@ -219,7 +217,7 @@ def main(args):
         evaluate(data_loader_val, model, args.device, args)
 
     if misc.is_main_process():
-        save_checkpoint(model_without_ddp, args.save_path, file_name='ep_'+str(epoch))  # Check whether OK to save the multiGPU model
+        save_checkpoint(model_without_ddp, args.save_path, file_name='pretrain')  # Check whether OK to save the multiGPU model
 
 if __name__ == '__main__':
     args = get_args_parser()

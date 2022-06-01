@@ -172,7 +172,7 @@ def main(args):
     
     # ================== Create the model and copy alice parameters ==================
     seed_model = get_init_net(args)
-    ckp_path = args.word_dir + 'pretrain.pt'
+    ckp_path = args.work_dir + 'pretrain.pt'
     load_checkpoint(args, seed_model, ckp_path, which_part='alice')
 
     # ================== Get some common settings ==================
