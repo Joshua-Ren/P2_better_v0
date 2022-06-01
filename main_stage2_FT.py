@@ -191,11 +191,11 @@ def main(args):
 
     # ================== FT all parts, use multiple GPUs
         # ----- Get all checkpoints for Bob
-    bob_ckp_folder = os.join.path(args.work_dir, args.LP_dir)
+    bob_ckp_folder = os.path.join(args.work_dir, args.LP_dir)
     file_list = os.listdir(bob_ckp_folder)
     for f in file_list:
         bob_ep = f.split('.')[0].split('_')[-1]
-        bob_path = os.join(bob_ckp_folder, f)
+        bob_path = os.path.join(bob_ckp_folder, f)
 
         model2 = copy.deepcopy(seed_model)
         model2.to(args.device)
