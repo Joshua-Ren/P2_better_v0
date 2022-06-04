@@ -118,7 +118,8 @@ def get_args_parser():
 
 def main(args):
     # ================= Prepare for distributed training =====
-    misc.init_distributed_mode(args)
+    if args.world_size==1:
+        misc.init_distributed_mode(args)
     # fix the seed for reproducibility
     seed = args.seed + misc.get_rank()
     torch.manual_seed(seed)
@@ -129,7 +130,7 @@ def main(args):
     dataset_train = build_dataset(is_train=True, args=args)
     dataset_val = build_dataset(is_train=False, args=args)
 
-    if True: # args.distributed:
+    if args.world_size==1:
         num_tasks = misc.get_world_size()
         global_rank = misc.get_rank()
         sampler_train = torch.utils.data.DistributedSampler(
@@ -141,7 +142,9 @@ def main(args):
         sampler_val = torch.utils.data.SequentialSampler(dataset_val)
     
     # =================== Initialize wandb ========================
-    if misc.is_main_process():
+    if args.world_size==1:
+        run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
+    elif misc.is_main_process():
         run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
 
     # ================== Prepare for the dataloader ===============
@@ -176,9 +179,13 @@ def main(args):
     load_checkpoint(args, seed_model, ckp_path, which_part='alice')
 
     # ================== Get some common settings ==================
-    eff_batch_size = args.batch_size * misc.get_world_size()
-    if args.lr is None:  # only base_lr is specified
-        args.lr = args.blr * eff_batch_size / 256
+    if args.world_size==1:
+        args.lr = args.blr
+    else:
+        eff_batch_size = args.batch_size * misc.get_world_size()
+        if args.lr is None:  # only base_lr is specified
+            args.lr = args.blr * eff_batch_size / 256
+
     if mixup_fn is not None:
         # smoothing is handled with mixup label transform
         criterion = SoftTargetCrossEntropy()
@@ -196,7 +203,9 @@ def main(args):
 
     for i in range(len(file_list)+1):
         modelt = copy.deepcopy(seed_model)
+        model0 = copy.deepcopy(modelt)
         modelt.to(args.device)
+        model0.to(args.device)
         if i==0:
             bob_ep = 0
         else:
@@ -204,13 +213,13 @@ def main(args):
             bob_ep = int(f.split('.')[0].split('_')[-1])+1
             bob_path = os.path.join(bob_ckp_folder, f)
             modelt.Bob.load_state_dict(torch.load(bob_path),strict=False)
-        model0 = copy.deepcopy(modelt)
-        modelt = torch.nn.parallel.DistributedDataParallel(modelt, device_ids=[args.gpu])
+        if args.world_size > 1:
+            modelt = torch.nn.parallel.DistributedDataParallel(modelt, device_ids=[args.gpu])
         optimizer, scheduler = get_optimizer(modelt, args)
         best_vacc1 = 0
         for epoch in range(args.ft_epochs):
-            train_one_epoch(modelt, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')
             vacc1, _ = evaluate(data_loader_val, modelt, args.device, args, model0=model0, train_type='ft')
+            train_one_epoch(modelt, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')  
             if vacc1 >= best_vacc1:
                 best_vacc1 = vacc1
         if misc.is_main_process():
