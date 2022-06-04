@@ -118,7 +118,7 @@ def get_args_parser():
 
 def main(args):
     # ================= Prepare for distributed training =====
-    if args.world_size==1:
+    if args.world_size>1:
         misc.init_distributed_mode(args)
     # fix the seed for reproducibility
     seed = args.seed + misc.get_rank()
@@ -130,7 +130,7 @@ def main(args):
     dataset_train = build_dataset(is_train=True, args=args)
     dataset_val = build_dataset(is_train=False, args=args)
 
-    if args.world_size==1:
+    if args.world_size>1:
         num_tasks = misc.get_world_size()
         global_rank = misc.get_rank()
         sampler_train = torch.utils.data.DistributedSampler(
@@ -142,9 +142,7 @@ def main(args):
         sampler_val = torch.utils.data.SequentialSampler(dataset_val)
     
     # =================== Initialize wandb ========================
-    if args.world_size==1:
-        run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
-    elif misc.is_main_process():
+    if misc.is_main_process():
         run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
 
     # ================== Prepare for the dataloader ===============
