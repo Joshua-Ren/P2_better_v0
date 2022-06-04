@@ -121,6 +121,8 @@ def main(args):
     if args.world_size>1:
         misc.init_distributed_mode(args)
     # fix the seed for reproducibility
+    if args.seed==-1:
+        args.seed = np.random.randint(1,10086)
     seed = args.seed + misc.get_rank()
     torch.manual_seed(seed)
     np.random.seed(seed)
