@@ -25,7 +25,7 @@ from util.datasets import build_dataset
 #from util.pos_embed import interpolate_pos_embed
 from util.misc import NativeScalerWithGradNormCount as NativeScaler
 
-from engine_stage1 import train_one_epoch, evaluate
+from engine_PT import train_one_epoch, evaluate
 
 
 def get_args_parser():
@@ -106,6 +106,7 @@ def get_args_parser():
     parser.add_argument('--dist_on_itp', action='store_true')
     parser.add_argument('--dist_url', default='env://',
                         help='url used to set up distributed training')
+    parser.add_argument('--distributed',default=False)
     return parser
 
 
@@ -122,7 +123,7 @@ def main(args):
     dataset_train = build_dataset(is_train=True, args=args)
     dataset_val = build_dataset(is_train=False, args=args)
 
-    if True: # args.distributed:
+    if args.distributed:
         num_tasks = misc.get_world_size()
         global_rank = misc.get_rank()
         sampler_train = torch.utils.data.DistributedSampler(
@@ -193,7 +194,7 @@ def main(args):
     print("criterion = %s" % str(criterion))
 
     for epoch in range(args.pt_epochs):
-        if True: #args.distributed:
+        if args.distributed:
             data_loader_train.sampler.set_epoch(epoch)
         train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args)
         evaluate(data_loader_val, model, args.device, args)
