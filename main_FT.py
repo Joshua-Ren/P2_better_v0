@@ -26,7 +26,7 @@ from util.datasets import build_dataset
 #from util.pos_embed import interpolate_pos_embed
 from util.misc import NativeScalerWithGradNormCount as NativeScaler
 
-from engine_stage2 import train_one_epoch, evaluate
+from engine_LPFT import train_one_epoch, evaluate
 
 
 def get_args_parser():
@@ -100,48 +100,28 @@ def get_args_parser():
                         help='device to use for training / testing')
     parser.add_argument('--seed', default=0, type=int)
 
-    parser.add_argument('--num_workers', default=4, type=int)
+    parser.add_argument('--num_workers', default=2, type=int)
     parser.add_argument('--pin_mem', action='store_true',
                         help='Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.')
     parser.add_argument('--no_pin_mem', action='store_false', dest='pin_mem')
     parser.set_defaults(pin_mem=True)
 
-    # distributed training parameters
-    parser.add_argument('--world_size', default=4, type=int,
-                        help='number of distributed processes')
-    parser.add_argument('--local_rank', default=-1, type=int)
-    parser.add_argument('--dist_on_itp', action='store_true')
-    parser.add_argument('--dist_url', default='env://',
-                        help='url used to set up distributed training')
     return parser
 
 
 def main(args):
-    # ================= Prepare for distributed training =====
-    if args.world_size>1:
-        misc.init_distributed_mode(args)
-    # fix the seed for reproducibility
     if args.seed==-1:
         args.seed = np.random.randint(1,10086)
-    seed = args.seed + misc.get_rank()
-    torch.manual_seed(seed)
-    np.random.seed(seed)
+    torch.manual_seed(args.seed)
+    np.random.seed(args.seed)
     cudnn.benchmark = True
     
     # ================== Prepare for the dataloader ===============
     dataset_train = build_dataset(is_train=True, args=args)
     dataset_val = build_dataset(is_train=False, args=args)
 
-    if args.world_size>1:
-        num_tasks = misc.get_world_size()
-        global_rank = misc.get_rank()
-        sampler_train = torch.utils.data.DistributedSampler(
-            dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
-        )
-        sampler_val = torch.utils.data.SequentialSampler(dataset_val)
-    else:
-        sampler_train = torch.utils.data.RandomSampler(dataset_train)
-        sampler_val = torch.utils.data.SequentialSampler(dataset_val)
+    sampler_train = torch.utils.data.RandomSampler(dataset_train)
+    sampler_val = torch.utils.data.SequentialSampler(dataset_val)
     
     # =================== Initialize wandb ========================
     if misc.is_main_process():
@@ -213,8 +193,6 @@ def main(args):
             bob_ep = int(f.split('.')[0].split('_')[-1])+1
             bob_path = os.path.join(bob_ckp_folder, f)
             modelt.Bob.load_state_dict(torch.load(bob_path),strict=False)
-        if args.world_size > 1:
-            modelt = torch.nn.parallel.DistributedDataParallel(modelt, device_ids=[args.gpu])
         optimizer, scheduler = get_optimizer(modelt, args)
         best_vacc1 = 0
         for epoch in range(args.ft_epochs):

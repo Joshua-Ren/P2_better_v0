@@ -25,7 +25,7 @@ import util.misc as misc
 from util.datasets import build_dataset
 #from util.pos_embed import interpolate_pos_embed
 from util.misc import NativeScalerWithGradNormCount as NativeScaler
-from engine_stage2 import train_one_epoch, evaluate
+from engine_LPFT import train_one_epoch, evaluate
 
 
 def get_args_parser():
@@ -94,7 +94,7 @@ def get_args_parser():
                         help='device to use for training / testing')
     parser.add_argument('--seed', default=0, type=int)
 
-    parser.add_argument('--num_workers', default=4, type=int)
+    parser.add_argument('--num_workers', default=2, type=int)
     parser.add_argument('--pin_mem', action='store_true',
                         help='Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.')
     parser.add_argument('--no_pin_mem', action='store_false', dest='pin_mem')
@@ -104,6 +104,8 @@ def get_args_parser():
 
 
 def main(args):
+    if args.seed==-1:
+        args.seed = np.random.randint(1,10086)
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
     cudnn.benchmark = True
