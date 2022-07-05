@@ -165,8 +165,6 @@ def main(args):
     print("criterion = %s" % str(criterion))
 
     for epoch in range(args.epochs):
-        if args.distributed:
-            data_loader_train.sampler.set_epoch(epoch)
         train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args)
         evaluate(data_loader_val, model, args.device, args)
     save_checkpoint(args, model, which_part='alice', file_name='resnet18_PT')  # Check whether OK to save the multiGPU model
