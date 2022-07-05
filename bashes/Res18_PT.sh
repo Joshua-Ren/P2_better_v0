@@ -1,13 +1,14 @@
 #!/bin/bash
 #SBATCH -A NLP-CDT-SL2-GPU
 #SBATCH -p ampere
-#SBATCH --job-name=stage1
+#SBATCH --job-name=PT
+#SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --time=36:00:00
 #SBATCH --mem-per-cpu=10G
 #SBATCH --output=./logs/stage1.txt 
-#SBATCH --gres=gpu:4
+#SBATCH --gres=gpu:1
 
 
 export NCCL_P2P_DISABLE=1
@@ -22,7 +23,7 @@ source /home/sg955/functorch-env/bin/activate
 
 cd /home/sg955/GitWS/P2_better_v0/
 
-srun python -m torch.distributed.launch --nproc_per_node=4 --master_port 1086 main_stage1.py \
+srun python main_PT.py \
 --batch_size 128  \
 --dataset cifar10 --figsize 32 --loss_type ce \
---run_name C10_fs32_ce
+--run_name C10_res18_PT

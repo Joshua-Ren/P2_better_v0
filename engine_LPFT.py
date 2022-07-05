@@ -76,6 +76,8 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
     ztz0_norm = AverageMeter()
     criterion = torch.nn.CrossEntropyLoss()
     model.eval()
+    if model0 is not None:
+        model0.eval()
 
     for i, (images,targets) in enumerate(data_loader):
         images = images.to(device, non_blocking=True)

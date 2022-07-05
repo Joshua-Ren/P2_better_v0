@@ -42,39 +42,40 @@ def sort_files(file_list):
     return new_file_list
 
 # ========= Functions about the checkpoint
-def save_checkpoint(model, save_path, file_name='test'):
-    file_path = os.path.join(save_path, file_name+'.pt')
-    torch.save(model.state_dict(), file_path)
-    
-def get_Alice_Bob_dict(tmp_model):
-    from collections import OrderedDict
-    alice_dict = OrderedDict()
-    bob_dict = OrderedDict()
-    for name, param in tmp_model.Alice.named_parameters():
-        alice_dict[name] = param
-    for name, param in tmp_model.Bob.named_parameters():
-        bob_dict[name] = param
-    return alice_dict, bob_dict
-
-def load_checkpoint(args, model, ckp_path, which_part='all'):
+def save_checkpoint(args, model, which_part='alice', file_name='test'):
+    if which_part.lower()=='alice':
+        file_path = os.path.join(args.save_path, 'Alice_', file_name+'.pth')
+        if args.model.startswith('vit'):
+            torch.save(model.state_dict(), file_path)
+        elif args.model.startswith('res'):
+            torch.save(model.Alice.state_dict(), file_path)
+    elif which_part.lower()=='bob':
+        file_path = os.path.join(args.save_path, 'Bob_', file_name+'.pth')
+        if args.model.startswith('vit'):
+            torch.save(model.head.state_dict(), file_path)
+        elif args.model.startswith('res'):
+            torch.save(model.Bob.state_dict(), file_path)
+    else:
+        print('which_part must be alice or bob')
+        
+def load_checkpoint(args, model, ckp_path, which_part='alice'):
     '''
         Use this to load params of specific part (Alice, Bob or all),
         from ckp to model.
     '''
-    if which_part.lower()=='all':
-        model.load_state_dict(torch.load(ckp_path))
-    elif which_part.lower()=='alice':
-        tmp_model = get_init_net(args)
-        tmp_model.load_state_dict(torch.load(ckp_path))
-        alice_dict, _ = get_Alice_Bob_dict(tmp_model)
-        model.Alice.load_state_dict(alice_dict,strict=False)
+    if which_part.lower()=='alice':
+        if args.model.startswith('vit'):
+            mis_k, unex_k = model.load_state_dict(torch.load(ckp_path),strict=False)
+        elif args.model.startswith('res'):
+            mis_k, unex_k = model.Alice.load_state_dict(torch.load(ckp_path),strict=False)
     elif which_part.lower()=='bob':
-        tmp_model = get_init_net(args)
-        tmp_model.load_state_dict(torch.load(ckp_path))
-        _, bob_dict = get_Alice_Bob_dict(tmp_model)
-        model.Bob.load_state_dict(bob_dict,strict=False)
+        if args.model.startswith('vit'):
+            mis_k, unex_k = model.head.load_state_dict(torch.load(ckp_path),strict=False)
+        elif args.model.startswith('res'):
+            mis_k, unex_k = model.Bob.load_state_dict(torch.load(ckp_path),strict=False)
     else:
-        print('which_part must be alice, bob, or all')      
+        print('which_part must be alice or bob')
+    return mis_k, unex_k
 
 
 # =========== wandb functions =================
@@ -103,14 +104,13 @@ def get_init_net(args, force_type=None):
         net_type = force_type
 
     if net_type=='resnet18':
-        net = ResNet18(args.nb_classes, AB_split=args.AB_split)
+        net = ResNet18(args.nb_classes, Bob_layer=args.Bob_layer)
     elif net_type=='resnet50':
-        net = ResNet50(args.nb_classes, AB_split=args.AB_split)
-    elif net_type=='efficientb3':
-        from efficientnet_pytorch import EfficientNet
-        net = EfficientNet.from_pretrained('efficientnet-b3', num_classes=args.nb_class)
+        net = ResNet50(args.nb_classes, Bob_layer=args.Bob_layer)
+    elif net_type=='vit':
+        net = timm.create_model('vit_base_patch16_224', pretrained=False, num_classes=args.nb_classes)
     else:
-        print('net structure not supported, only support resnet18, resnet50, mobile, vgg, efficientb3')
+        print('net structure not supported, only support resnet18, resnet50, vit16')
     return net
 
 def get_optimizer(model, args):

@@ -32,15 +32,15 @@ def get_args_parser():
     parser = argparse.ArgumentParser('Stage1 generate pretrain checkpoint', add_help=False)
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * # gpus')
-    parser.add_argument('--ft_epochs', default=200, type=int)
+    parser.add_argument('--pt_epochs', default=200, type=int)
 
     # Model parameters
     parser.add_argument('--model', default='resnet18', type=str, metavar='MODEL',
-                        help='Name of model to train')
+                        help='only for resnet 18')
     parser.add_argument('--figsize', default=32, type=int,
                         help='images input size, cifar is 32')
-    parser.add_argument('--AB_split', default=6, type=int,
-                        help='6: Bob only linear, 4: Bob has linear and pool+view, 3: Bob has linear+...+layer4,...')
+    parser.add_argument('--Bob_layer', default=1, type=int,
+                        help='1: only last fc, 2: fc+layer4, 3:fc+layer43, 4: fc+layer432')
 
     # Optimizer parameters
     parser.add_argument('--loss_type', type=str, default='ce',
@@ -169,27 +169,9 @@ def main(args):
     
     # ================== Create the model ==================
     model = get_init_net(args)
-    """
-            # ----- Load the checkpoint
-    if args.finetune and not args.eval:
-        ckp_path = base_folder + 'results/' + args.finetune
-        #ckp_path = base_folder+'results/Interact_MAE/mae_vit_base_patch16_smallde/offi_4GPU_smallDE400/checkpoint-300.pth'
-        checkpoint = torch.load(ckp_path, map_location='cpu')
-        checkpoint_model = checkpoint['model']
-        state_dict = model.state_dict()
-        for k in ['head.weight', 'head.bias']:
-            if k in checkpoint_model and checkpoint_model[k].shape != state_dict[k].shape:
-                print(f"Removing key {k} from pretrained checkpoint")
-                del checkpoint_model[k]
-
-        # load pre-trained model
-        msg = model.load_state_dict(checkpoint_model, strict=False)
-        print(msg)
-        trunc_normal_(model.head.weight, std=2e-5)
-    """
     model.to(args.device)
     model_without_ddp = model
-    if True: #args.distributed:
+    if args.distributed:
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
         model_without_ddp = model.module
 
@@ -210,14 +192,14 @@ def main(args):
         criterion = torch.nn.MSELoss()
     print("criterion = %s" % str(criterion))
 
-    for epoch in range(args.ft_epochs):
+    for epoch in range(args.pt_epochs):
         if True: #args.distributed:
             data_loader_train.sampler.set_epoch(epoch)
         train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args)
         evaluate(data_loader_val, model, args.device, args)
 
     if misc.is_main_process():
-        save_checkpoint(model_without_ddp, args.save_path, file_name='pretrain')  # Check whether OK to save the multiGPU model
+        save_checkpoint(args, model_without_ddp, which_part='alice', file_name='resnet18_PT')  # Check whether OK to save the multiGPU model
 
 if __name__ == '__main__':
     args = get_args_parser()
