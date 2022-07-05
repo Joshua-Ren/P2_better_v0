@@ -55,12 +55,11 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
     losses.update(loss.data.item(), samples.size(0))
     top1.update(prec1.item(), samples.size(0))
     top5.update(prec5.item(), samples.size(0))   
-    if misc.is_main_process():
-        wandb.log({'epoch':epoch})         
-        wandb.log({'learn_rate':lr})
-        wandb.log({'train_loss':losses.avg})
-        wandb.log({'train_top1':top1.avg})
-        wandb.log({'train_top5':top5.avg})
+    wandb.log({'epoch':epoch})         
+    wandb.log({'learn_rate':lr})
+    wandb.log({'train_loss':losses.avg})
+    wandb.log({'train_top1':top1.avg})
+    wandb.log({'train_top5':top5.avg})
             
 @torch.no_grad()
 def evaluate(data_loader, model, device, args):
@@ -87,8 +86,7 @@ def evaluate(data_loader, model, device, args):
         top1.update(prec1.item(), images.size(0))
         top5.update(prec5.item(), images.size(0))
         
-    if misc.is_main_process():
-        wandb.log({'valid_loss':losses.avg})
-        wandb.log({'valid_top1':top1.avg})
-        wandb.log({'valid_top5':top5.avg})
+    wandb.log({'valid_loss':losses.avg})
+    wandb.log({'valid_top1':top1.avg})
+    wandb.log({'valid_top5':top5.avg})
     return top1.avg, top5.avg

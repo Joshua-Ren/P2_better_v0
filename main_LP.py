@@ -32,11 +32,9 @@ def get_args_parser():
     parser = argparse.ArgumentParser('Stage2 linear prob one GPU', add_help=False)
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * # gpus')
-    parser.add_argument('--ft_epochs', default=100, type=int)
-    parser.add_argument('--lp_epochs', default=100, type=int)
-    #parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 4, 8, 16, 32, 64, 99], type=list,
-    #                    help='which vector_ep we select for the FT phase')
-    parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 20, 24, 32, 40, 48, 64, 72, 99], type=list,
+    parser.add_argument('--lp_epochs', default=8192, type=int)
+    parser.add_argument('--scheduler_epochs', default=8192, type=int)
+    parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 3, 4, 6, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192], type=list,
                         help='which vector_ep we select for the FT phase')
 
     # Pretrain checkpoint
@@ -48,21 +46,17 @@ def get_args_parser():
                         help='Name of model to train')
     parser.add_argument('--figsize', default=32, type=int,
                         help='images input size, cifar is 32')
-    parser.add_argument('--AB_split', default=6, type=int,
-                        help='6: Bob only linear, 4: Bob has linear and pool+view, 3: Bob has linear+...+layer4,...')
+    parser.add_argument('--Bob_layer', default=1, type=int,
+                        help='1: only last fc, 2: fc+layer4, 3:fc+layer43, 4: fc+layer432')
 
     # Optimizer parameters
     parser.add_argument('--loss_type', type=str, default='ce',
                         help='can be mse or ce')    
     parser.add_argument('--optim_type', type=str, default='sgd',
                         help='can be sgd or adam')
-    parser.add_argument('--lr', type=float, default=None, metavar='LR',
+    parser.add_argument('--lr', type=float, default=1e-4, metavar='LR',
                         help='learning rate (absolute lr)')
-    parser.add_argument('--blr', type=float, default=5e-4, metavar='LR',
-                        help='base learning rate: absolute_lr = base_lr * total_batch_size / 256')
-    #parser.add_argument('--clip_grad', type=float, default=10, metavar='NORM',
-    #                    help='Clip gradient norm (default: None, no clipping)')
-    parser.add_argument('--weight_decay', type=float, default=0.05,
+    parser.add_argument('--weight_decay', type=float, default=0,
                         help='weight decay (default: 0.05)')
     parser.add_argument('--min_lr', type=float, default=1e-6, metavar='LR',
                         help='lower lr bound for cyclic schedulers that hit 0')
@@ -94,7 +88,7 @@ def get_args_parser():
                         help='number of the classification types')
                         
     parser.add_argument('--run_name',default=None,type=str)
-    parser.add_argument('--proj_name',default='LP-FT-main', type=str)
+    parser.add_argument('--proj_name',default='betterv0_LP', type=str)
     
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
@@ -160,8 +154,6 @@ def main(args):
 
     # ================== Get some common settings ==================
     eff_batch_size = args.batch_size * misc.get_world_size()
-    if args.lr is None:  # only base_lr is specified
-        args.lr = args.blr * eff_batch_size / 256
     if mixup_fn is not None:
         # smoothing is handled with mixup label transform
         criterion = SoftTargetCrossEntropy()
@@ -177,11 +169,11 @@ def main(args):
     model.to(args.device)
     optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
     for epoch in range(args.lp_epochs):
+        if epoch in args.lp_epoch_list:
+            ckp_name = 'bob_ep_'+str(epoch).zfill(4)
+            save_checkpoint(args, model, which_part='bob', file_name=ckp_name)
         train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')
         evaluate(data_loader_val, model, args.device, args, train_type='lp')
-        if epoch in args.lp_epoch_list:
-            ckp_name = 'bob_ep_'+str(epoch)
-            save_checkpoint(model.Bob, save_path, file_name=ckp_name)
 
 if __name__ == '__main__':
     args = get_args_parser()

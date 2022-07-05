@@ -47,10 +47,8 @@ def get_args_parser():
                         help='can be mse or ce')    
     parser.add_argument('--optim_type', type=str, default='sgd',
                         help='can be sgd or adam')
-    parser.add_argument('--lr', type=float, default=None, metavar='LR',
+    parser.add_argument('--lr', type=float, default=1e-3, metavar='LR',
                         help='learning rate (absolute lr)')
-    parser.add_argument('--blr', type=float, default=1e-3, metavar='LR',
-                        help='base learning rate: absolute_lr = base_lr * total_batch_size / 256')
     #parser.add_argument('--clip_grad', type=float, default=10, metavar='NORM',
     #                    help='Clip gradient norm (default: None, no clipping)')
     parser.add_argument('--weight_decay', type=float, default=0.05,
@@ -99,21 +97,11 @@ def get_args_parser():
     parser.add_argument('--no_pin_mem', action='store_false', dest='pin_mem')
     parser.set_defaults(pin_mem=True)
 
-    # distributed training parameters
-    parser.add_argument('--world_size', default=4, type=int,
-                        help='number of distributed processes')
-    parser.add_argument('--local_rank', default=-1, type=int)
-    parser.add_argument('--dist_on_itp', action='store_true')
-    parser.add_argument('--dist_url', default='env://',
-                        help='url used to set up distributed training')
-    parser.add_argument('--distributed',default=False)
     return parser
 
 
 def main(args):
     # ================= Prepare for distributed training =====
-    misc.init_distributed_mode(args)
-    # fix the seed for reproducibility
     seed = args.seed + misc.get_rank()
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -123,24 +111,15 @@ def main(args):
     dataset_train = build_dataset(is_train=True, args=args)
     dataset_val = build_dataset(is_train=False, args=args)
 
-    if args.distributed:
-        num_tasks = misc.get_world_size()
-        global_rank = misc.get_rank()
-        sampler_train = torch.utils.data.DistributedSampler(
-            dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
-        )
-        sampler_val = torch.utils.data.SequentialSampler(dataset_val)
-    else:
-        sampler_train = torch.utils.data.RandomSampler(dataset_train)
-        sampler_val = torch.utils.data.SequentialSampler(dataset_val)
+    sampler_train = torch.utils.data.RandomSampler(dataset_train)
+    sampler_val = torch.utils.data.SequentialSampler(dataset_val)
     
     # =================== Initialize wandb ========================
-    if misc.is_main_process():
-        run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
-        save_path = os.path.join(args.work_dir, run_name)
-        args.save_path = save_path
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
+    run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
+    save_path = os.path.join(args.work_dir, run_name)
+    args.save_path = save_path
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
 
     # ================== Prepare for the dataloader ===============
     data_loader_train = torch.utils.data.DataLoader(
@@ -171,14 +150,6 @@ def main(args):
     # ================== Create the model ==================
     model = get_init_net(args)
     model.to(args.device)
-    model_without_ddp = model
-    if args.distributed:
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
-        model_without_ddp = model.module
-
-    eff_batch_size = args.batch_size * misc.get_world_size()
-    if args.lr is None:  # only base_lr is specified
-        args.lr = args.blr * eff_batch_size / 256
 
     optimizer, scheduler = get_optimizer(model, args)
 
@@ -198,9 +169,7 @@ def main(args):
             data_loader_train.sampler.set_epoch(epoch)
         train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args)
         evaluate(data_loader_val, model, args.device, args)
-
-    if misc.is_main_process():
-        save_checkpoint(args, model_without_ddp, which_part='alice', file_name='resnet18_PT')  # Check whether OK to save the multiGPU model
+    save_checkpoint(args, model, which_part='alice', file_name='resnet18_PT')  # Check whether OK to save the multiGPU model
 
 if __name__ == '__main__':
     args = get_args_parser()
