@@ -16,9 +16,13 @@ import torch
 import torch.backends.cudnn as cudnn
 from util.general import *
 from torchvision import models as M
+import torchvision.transforms as T
 
+# ------------ CIFAR10.1
 DATA_FOLDER = 'E:\\P2_better_v0\\data\\cifar10_1'
 datav4 = np.load(os.path.join(DATA_FOLDER,'cifar10.1_v4_data.npy'))
 labelv4 = np.load(os.path.join(DATA_FOLDER,'cifar10.1_v4_labels.npy'))
 datav6 = np.load(os.path.join(DATA_FOLDER,'cifar10.1_v6_data.npy'))
 labelv6 = np.load(os.path.join(DATA_FOLDER,'cifar10.1_v6_labels.npy'))
+
+cifar100 = torchvision.datasets.CIFAR100('.data\\cifar100', train=True, download=True, transform=T.ToTensor())

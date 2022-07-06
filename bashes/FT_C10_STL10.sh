@@ -27,5 +27,6 @@ srun python main_FT.py \
 --batch_size 128  --dataset stl10 --figsize 32 --loss_type ce \
 --lr 0.001 \
 --work_dir ./results/C10_res18_PT \
+--alice_name Alice_resnet18_PT.pth \
 --LP_dir LP_STL10_1en4 \
---run_name C10_STL_1en3_FT_run1
+--run_name FT_C10_STL_1en3_run1

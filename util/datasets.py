@@ -12,8 +12,10 @@ import os
 import PIL
 
 import torchvision
+import torch
 from torchvision import datasets
 import torchvision.transforms as T
+import torch.utils.data as Data
 from timm.data import create_transform
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 from .data_loader_lmdb import ImageFolderLMDB
@@ -45,7 +47,8 @@ def build_dataset(is_train, args, force_dataset=None):
             dataset = torchvision.datasets.CIFAR10('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/cifar10', train=False, download=True, transform=val_T)
     elif dataset_name=='cifar100':
         if is_train:
-            dataset = torchvision.datasets.CIFAR100('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/cifar100', train=True, download=True, transform=train_T)
+            origin_dataset = torchvision.datasets.CIFAR100('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/cifar100', train=True, download=True, transform=train_T)
+            dataset = Data.TensorDataset(torch.tensor(origin_dataset.data[:10000]), torch.tensor(origin_dataset.targets[:10000]))
         else:
             dataset = torchvision.datasets.CIFAR100('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/cifar100', train=False, download=True, transform=val_T)
     return dataset
