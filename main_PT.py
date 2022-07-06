@@ -83,7 +83,7 @@ def get_args_parser():
                         help='number of the classification types')
                         
     parser.add_argument('--run_name',default=None,type=str)
-    parser.add_argument('--proj_name',default='LP-FT-pretrain', type=str)
+    parser.add_argument('--proj_name',default='betterv0_PT', type=str)
     
     parser.add_argument('--work_dir', default='./results/',
                         help='path of the pretrained checkpoint')
