@@ -27,5 +27,5 @@ srun python main_LP.py \
 --batch_size 128  --dataset stl10 --figsize 224 --loss_type ce \
 --lr 0.0001 \
 --work_dir ./results/C10_res18_PT \
---run_name LP_STL10
+--run_name LP_STL10 \
 --alice_name Alice_resnet18_PT.pth

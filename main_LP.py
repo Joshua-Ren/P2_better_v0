@@ -120,10 +120,10 @@ def main(args):
     
     # =================== Initialize wandb ========================
     run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
-    save_path = os.path.join(args.work_dir, run_name)
+    args.save_path = os.path.join(args.work_dir, run_name)
             # -------- save bob's checkpoints in this folder
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
+    if not os.path.exists(args.save_path):
+        os.makedirs(args.save_path)
 
     # ================== Prepare for the dataloader ===============
     data_loader_train = torch.utils.data.DataLoader(
