@@ -31,7 +31,7 @@ def get_bob_grad_norm(args, model):
     elif args.model in ['vit16']:
         for name, params in model.head.named_parameters():
             tmp_pgrad_bob = torch.cat((tmp_pgrad_bob,params.grad.reshape(-1,1)),axis=0)
-        return torch.norm(tmp_pgrad_bob).cpu(), torch.norm(tmp_pgrad_bob).cpu()        
+        return torch.norm(tmp_pgrad_bob).cpu().mean(), torch.norm(tmp_pgrad_bob).cpu().mean()        
 
 def args_get_class(args):
     if args.dataset=='cifar10' or args.dataset=='stl10':
