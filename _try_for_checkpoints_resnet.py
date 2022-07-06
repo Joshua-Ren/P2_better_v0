@@ -18,7 +18,7 @@ from torchvision import models as M
 
 
 RES_CKP = ['Alice_resnet18_PT.pth', 'All_resnet18_PT.pth']
-ckp_folder = 'E:\\P2_better_v0\\results\\C10_res18_PT'
+ckp_folder = 'E:\\P2_better_v0\\results\\C10_res18_fig32_PT'
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Stage2 linear prob one GPU', add_help=False)
@@ -29,13 +29,13 @@ def get_args_parser():
                         help='images input size, cifar is 32')
     parser.add_argument('--Bob_layer', default=1, type=int,
                         help='1: only last fc, 2: fc+layer4, 3:fc+layer43, 4: fc+layer432')
-    parser.add_argument('--nb_classes', default=1000)
+    parser.add_argument('--nb_classes', default=10)
     return parser
 
 args = get_args_parser()
 args = args.parse_args()
 
-ckp_path = os.path.join(ckp_folder,'All_resnet18_PT.pth')
+ckp_path = os.path.join(ckp_folder,'Alice_resnet18_PT.pth')
 ckp_dict = torch.load(ckp_path)
 ckp_key_list = list(ckp_dict.keys())
 

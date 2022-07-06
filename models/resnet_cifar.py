@@ -81,13 +81,60 @@ class ResNet(nn.Module):
         self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
         self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
         self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
-        self.pool2d = nn.AvgPool2d(kernel_size=4)
-        self.view = nn.Flatten()
-        self.linear = nn.Linear(512*block.expansion, num_classes)
+        self.avgpool = nn.AvgPool2d(kernel_size=4)
+        self.flatten = nn.Flatten()
+        self.fc = nn.Linear(512*block.expansion, num_classes)
 
         self.Bob_layer = Bob_layer
         self.Alice, self.Bob = self._Alice_Bob_split()
 
+    def _Alice_Bob_split(self):
+        if self.Bob_layer==1:
+            Alice = nn.Sequential()
+            Alice.add_module('layer0', self.layer0)
+            Alice.add_module('layer1', self.layer1)
+            Alice.add_module('layer2', self.layer2)
+            Alice.add_module('layer3', self.layer3)
+            Alice.add_module('layer4', self.layer4)
+            Alice.add_module('avgpool', self.avgpool)
+            Alice.add_module('flatten', self.flatten)          
+            Bob = nn.Sequential()
+            Bob.add_module('fc',self.fc)
+        elif self.Bob_layer==2:
+            Alice = nn.Sequential()
+            Alice.add_module('layer0', self.layer0)
+            Alice.add_module('layer1', self.layer1)
+            Alice.add_module('layer2', self.layer2)
+            Alice.add_module('layer3', self.layer3)    
+            Bob = nn.Sequential()
+            Bob.add_module('layer4', self.layer4)
+            Bob.add_module('avgpool', self.avgpool)
+            Bob.add_module('flatten', self.flatten)      
+            Bob.add_module('fc',self.fc)
+        elif self.Bob_layer==3:
+            Alice = nn.Sequential()
+            Alice.add_module('layer0', self.layer0)
+            Alice.add_module('layer1', self.layer1)
+            Alice.add_module('layer2', self.layer2)
+            Bob = nn.Sequential()
+            Bob.add_module('layer3', self.layer3) 
+            Bob.add_module('layer4', self.layer4)
+            Bob.add_module('avgpool', self.avgpool)
+            Bob.add_module('flatten', self.flatten)      
+            Bob.add_module('fc',self.fc)
+        elif self.Bob_layer==4:
+            Alice = nn.Sequential()
+            Alice.add_module('layer0', self.layer0)
+            Alice.add_module('layer1', self.layer1)
+            Bob = nn.Sequential()
+            Bob.add_module('layer2', self.layer2)
+            Bob.add_module('layer3', self.layer3) 
+            Bob.add_module('layer4', self.layer4)
+            Bob.add_module('avgpool', self.avgpool)
+            Bob.add_module('flatten', self.flatten)      
+            Bob.add_module('fc',self.fc)            
+        return Alice, Bob
+'''
     def _Alice_Bob_split(self):
       layer_list = [self.layer0, self.layer1, self.layer2, self.layer3, 
               self.layer4, self.pool2d, self.view, self.linear]
@@ -109,7 +156,7 @@ class ResNet(nn.Module):
             layers.append(block(self.in_planes, planes, stride))
             self.in_planes = planes * block.expansion
         return nn.Sequential(*layers)
-
+'''
     def forward(self, x):
         z = self.Alice(x)
         hid = self.Bob(z)
