@@ -85,7 +85,7 @@ def get_args_parser():
 
     # Dataset parameters
     parser.add_argument('--dataset', default='stl10', type=str,
-                        help='can be cifar10, stl10, cifar100, tiny, domainnet')    
+                        help='can be cifar10.1, stl10, cifar100, tiny, domainnet')    
     parser.add_argument('--nb_classes', default=10, type=int,
                         help='number of the classification types')
                         
@@ -153,8 +153,8 @@ def main(args):
     
     # ================== Create the model and copy alice parameters ==================
     seed_model = get_init_net(args)
-    ckp_path = os.path.join(args.work_dir, args.alice_name)
-    load_checkpoint(args, seed_model, ckp_path, which_part='alice')
+    alice_path = os.path.join(args.work_dir, args.alice_name)
+    load_checkpoint(args, seed_model, alice_path, which_part='alice')
 
     # ================== Get some common settings ==================
     if mixup_fn is not None:
@@ -170,7 +170,10 @@ def main(args):
     # ================== LP Bob part, save dict for args.lp_epoch_list
     model = copy.deepcopy(seed_model)
     model.to(args.device)
-    optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
+    if args.model in ['resnet18', 'resnet50']:
+        optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
+    elif args.model in ['vit16']:
+        optim_bob, scheduler_bob = get_optimizer(model.head, args)
     for epoch in range(args.epochs):
         if epoch in args.lp_epoch_list:
             ckp_name = 'bob_ep_'+str(epoch).zfill(4)

@@ -22,6 +22,24 @@ import sys
 sys.path.append("..")
 from models import *
 
+def get_bob_grad_norm(args, model):
+    tmp_pgrad_bob = torch.tensor([],requires_grad=False).cuda()
+    if args.model in ['resnet18', 'resnet50']:
+        for name, params in model.Bob.named_parameters():
+            tmp_pgrad_bob = torch.cat((tmp_pgrad_bob,params.grad.reshape(-1,1)),axis=0)
+        return torch.norm(tmp_pgrad_bob).cpu(), torch.norm(tmp_pgrad_bob).cpu()
+    elif args.model in ['vit16']:
+        for name, params in model.head.named_parameters():
+            tmp_pgrad_bob = torch.cat((tmp_pgrad_bob,params.grad.reshape(-1,1)),axis=0)
+        return torch.norm(tmp_pgrad_bob).cpu(), torch.norm(tmp_pgrad_bob).cpu()        
+
+def args_get_class(args):
+    if args.dataset=='cifar10' or args.dataset=='stl10':
+        args.nb_classes=10
+    elif args.dataset=='cifar100':
+        args.nb_class=100
+    return args
+
 def rnd_seed(seed):
     random.seed(seed)
     np.random.seed(seed)

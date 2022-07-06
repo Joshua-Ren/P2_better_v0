@@ -33,31 +33,32 @@ def get_args_parser():
     parser = argparse.ArgumentParser('Stage2 linear prob and finetune', add_help=False)
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * # gpus')
-    parser.add_argument('--ft_epochs', default=100, type=int)
+    parser.add_argument('--epochs', default=100, type=int)
 
     # Pretrain checkpoint
-    parser.add_argument('--work_dir', default='./results/C10_fs32_ce/',
+    parser.add_argument('--work_dir', default=None,
                         help='path of the pretrained checkpoint')
-    parser.add_argument('--LP_dir', default='STL10', type=str,
+    parser.add_argument('--LP_dir', default=None, type=str,
                         help='Under work-dir, which LP dir we choose')
+    parser.add_argument('--alice_name', default=None,
+                        help='name of the pretrained checkpoint')
+
 
     # Model parameters
     parser.add_argument('--model', default='resnet18', type=str, metavar='MODEL',
                         help='Name of model to train')
-    parser.add_argument('--figsize', default=32, type=int,
-                        help='images input size, cifar is 32')
-    parser.add_argument('--AB_split', default=6, type=int,
-                        help='6: Bob only linear, 4: Bob has linear and pool+view, 3: Bob has linear+...+layer4,...')
+    parser.add_argument('--figsize', default=224, type=int,
+                        help='images input size, all use 224')
+    parser.add_argument('--Bob_layer', default=1, type=int,
+                        help='1: only last fc, 2: fc+layer4, 3:fc+layer43, 4: fc+layer432')
 
     # Optimizer parameters
     parser.add_argument('--loss_type', type=str, default='ce',
                         help='can be mse or ce')    
     parser.add_argument('--optim_type', type=str, default='sgd',
                         help='can be sgd or adam')
-    parser.add_argument('--lr', type=float, default=None, metavar='LR',
+    parser.add_argument('--lr', type=float, default=1e-3, metavar='LR',
                         help='learning rate (absolute lr)')
-    parser.add_argument('--blr', type=float, default=5e-4, metavar='LR',
-                        help='base learning rate: absolute_lr = base_lr * total_batch_size / 256')
     #parser.add_argument('--clip_grad', type=float, default=10, metavar='NORM',
     #                    help='Clip gradient norm (default: None, no clipping)')
     parser.add_argument('--weight_decay', type=float, default=0.05,
@@ -92,10 +93,8 @@ def get_args_parser():
                         help='number of the classification types')
                         
     parser.add_argument('--run_name',default=None,type=str)
-    parser.add_argument('--proj_name',default='LP-FT-main', type=str)
+    parser.add_argument('--proj_name',default='betterv0_FT', type=str)
     
-    parser.add_argument('--output_dir', default='./',
-                        help='path where to save, like in another disk. Default is the current disk')
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
     parser.add_argument('--seed', default=0, type=int)
@@ -124,9 +123,11 @@ def main(args):
     sampler_val = torch.utils.data.SequentialSampler(dataset_val)
     
     # =================== Initialize wandb ========================
-    if misc.is_main_process():
-        run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
-
+    run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
+    save_path = os.join(args.work_dir, run_name)
+            # -------- save results in this folder
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
     # ================== Prepare for the dataloader ===============
     data_loader_train = torch.utils.data.DataLoader(
         dataset_train, sampler=sampler_train,
@@ -155,17 +156,10 @@ def main(args):
     
     # ================== Create the model and copy alice parameters ==================
     seed_model = get_init_net(args)
-    ckp_path = args.work_dir + 'pretrain.pt'
-    load_checkpoint(args, seed_model, ckp_path, which_part='alice')
+    alice_path = os.join.path(args.work_dir, args.alice_name)
+    load_checkpoint(args, seed_model, alice_path, which_part='alice')
 
     # ================== Get some common settings ==================
-    if args.world_size==1:
-        args.lr = args.blr
-    else:
-        eff_batch_size = args.batch_size * misc.get_world_size()
-        if args.lr is None:  # only base_lr is specified
-            args.lr = args.blr * eff_batch_size / 256
-
     if mixup_fn is not None:
         # smoothing is handled with mixup label transform
         criterion = SoftTargetCrossEntropy()
@@ -180,36 +174,48 @@ def main(args):
         # ----- Get all checkpoints for Bob
     bob_ckp_folder = os.path.join(args.work_dir, args.LP_dir)
     file_list = sort_files(os.listdir(bob_ckp_folder))
-
-    for i in range(len(file_list)+1):
+        # ----- Search the file, FT all the Bob checkpoints
+    for i in range(len(file_list)):
+        results = {'tloss':[],'tacc':[], #'tprobs':[],
+                   'vloss':[],'vacc':[],'vprobs':[],
+                'ztz0_cos':[], 'ztz0_norm':[],'ztz0_dot':[],'zt_norm':[], 
+                'grad_bob':[]}
         modelt = copy.deepcopy(seed_model)
         model0 = copy.deepcopy(modelt)
         modelt.to(args.device)
         model0.to(args.device)
-        if i==0:
-            bob_ep = 0
-        else:
-            f = file_list[i-1]
-            bob_ep = int(f.split('.')[0].split('_')[-1])+1
-            bob_path = os.path.join(bob_ckp_folder, f)
-            modelt.Bob.load_state_dict(torch.load(bob_path),strict=False)
+
+        f = file_list[i]
+        bob_ep = int(f.split('.')[0].split('_')[-1])
+        bob_path = os.path.join(bob_ckp_folder, f)
+        load_checkpoint(args, modelt, bob_path, which_part='bob')
         optimizer, scheduler = get_optimizer(modelt, args)
         best_vacc1 = 0
-        for epoch in range(args.ft_epochs):
-            vacc1, _ = evaluate(data_loader_val, modelt, args.device, args, model0=model0, train_type='ft')
-            train_one_epoch(modelt, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')  
+        for epoch in range(args.epochs):
+            vloss, vacc, vprobs, ztz0_cos, ztz0_norm, ztz0_dot, zt_norm = evaluate(data_loader_val, modelt, args.device, args, model0=model0, train_type='ft')
+            tloss, tacc, grad_bob = train_one_epoch(modelt, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')  
             if vacc1 >= best_vacc1:
                 best_vacc1 = vacc1
-        if misc.is_main_process():
-            wandb.log({'ft_last':vacc1})
-            wandb.log({'ft_best':best_vacc1})
-            wandb.log({'ft_bob_ep':bob_ep})
+        results['tloss'].append(tloss)
+        results['tacc'].append(tacc)
+        results['vloss'].append(vloss)
+        results['vacc'].append(vacc)
+        results['vprobs'].append(vprobs)
+        results['ztz0_cos'].append(ztz0_cos)
+        results['ztz0_norm'].append(ztz0_norm)
+        results['ztz0_dot'].append(ztz0_dot)
+        results['zt_norm'].append(zt_norm)
+        results['grad_bob'].append(grad_bob)
+        wandb.log({'ft_last':vacc1})
+        wandb.log({'ft_best':best_vacc1})
+        wandb.log({'ft_bob_ep':bob_ep})
+        # ----- Save the npy
+        result_save_name = os.path.join(save_path, f[:-3]+'.npy')
+        np.save(result_save_name, results)
+
 
 if __name__ == '__main__':
     args = get_args_parser()
     args = args.parse_args()
-    if args.dataset=='cifar10' or args.dataset=='stl10':
-        args.nb_classes=10
-    elif args.dataset=='cifar100':
-        args.nb_class=100
+    args = args_get_class(args)
     main(args)
