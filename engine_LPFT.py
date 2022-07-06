@@ -43,7 +43,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
         optimizer.zero_grad()   
         loss.backward()
         tmp_grad_bob = get_bob_grad_norm(args, model)
-        grad_bob.update(tmp_grad_bob.item())
+        grad_bob.update(tmp_grad_bob)
         optimizer.step()
         
     # ----- At the end of epoch

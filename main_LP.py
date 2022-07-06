@@ -176,7 +176,7 @@ def main(args):
         optim_bob, scheduler_bob = get_optimizer(model.head, args)
     for epoch in range(args.epochs):
         if epoch in args.lp_epoch_list:
-            ckp_name = '_ep_'+str(epoch).zfill(4)
+            ckp_name = 'ep_'+str(epoch).zfill(4)
             save_checkpoint(args, model, which_part='bob', file_name=ckp_name)
         train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')
         evaluate(data_loader_val, model, args.device, args, train_type='lp')
