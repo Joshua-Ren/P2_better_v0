@@ -88,6 +88,14 @@ class ResNet(nn.Module):
         self.Bob_layer = Bob_layer
         self.Alice, self.Bob = self._Alice_Bob_split()
 
+    def _make_layer(self, block, planes, num_blocks, stride):
+        strides = [stride] + [1]*(num_blocks-1)
+        layers = []
+        for stride in strides:
+            layers.append(block(self.in_planes, planes, stride))
+            self.in_planes = planes * block.expansion
+        return nn.Sequential(*layers)
+        
     def _Alice_Bob_split(self):
         if self.Bob_layer==1:
             Alice = nn.Sequential()
@@ -165,12 +173,4 @@ def test():
           Bob.add_module(name_list[i],layer_list[i])
           print('Bob contains '+name_list[i])
       return Alice,Bob
-
-    def _make_layer(self, block, planes, num_blocks, stride):
-        strides = [stride] + [1]*(num_blocks-1)
-        layers = []
-        for stride in strides:
-            layers.append(block(self.in_planes, planes, stride))
-            self.in_planes = planes * block.expansion
-        return nn.Sequential(*layers)
 '''
