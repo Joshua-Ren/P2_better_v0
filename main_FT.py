@@ -190,12 +190,12 @@ def main(args):
         bob_path = os.path.join(bob_ckp_folder, f)
         load_checkpoint(args, modelt, bob_path, which_part='bob')
         optimizer, scheduler = get_optimizer(modelt, args)
-        best_vacc1 = 0
+        best_vacc = 0
         for epoch in range(args.epochs):
             vloss, vacc, vprobs, ztz0_cos, ztz0_norm, ztz0_dot, zt_norm = evaluate(data_loader_val, modelt, args.device, args, model0=model0, train_type='ft')
             tloss, tacc, grad_bob = train_one_epoch(modelt, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')  
-            if vacc1 >= best_vacc1:
-                best_vacc1 = vacc1
+            if vacc >= best_vacc:
+                best_vacc = vacc
         results['tloss'].append(tloss)
         results['tacc'].append(tacc)
         results['vloss'].append(vloss)
