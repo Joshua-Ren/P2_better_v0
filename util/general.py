@@ -20,7 +20,8 @@ import torch.backends.cudnn as cudnn
 import torch.utils.data as Data
 import sys
 sys.path.append("..")
-from models import *
+from models.resnet import resnet50
+from models.resnet_cifar import resnet18
 
 def get_bob_grad_norm(args, model):
     tmp_pgrad_bob = torch.tensor([],requires_grad=False).cuda()

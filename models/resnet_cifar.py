@@ -69,7 +69,7 @@ class Bottleneck(nn.Module):
         return out
 
 class ResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=10, AB_split=6):
+    def __init__(self, block, num_blocks, num_classes=10, Bob_layer = 1):
       # Alice_Bob_split should be 1, 2, 3, 4, or 6, meaning split after this number
         super(ResNet, self).__init__()
         self.in_planes = 64
@@ -85,7 +85,7 @@ class ResNet(nn.Module):
         self.view = nn.Flatten()
         self.linear = nn.Linear(512*block.expansion, num_classes)
 
-        self.AB_split = AB_split
+        self.Bob_layer = Bob_layer
         self.Alice, self.Bob = self._Alice_Bob_split()
 
     def _Alice_Bob_split(self):
@@ -94,7 +94,7 @@ class ResNet(nn.Module):
       name_list = ['layer0', 'layer1', 'layer2', 'layer3', 'layer4', 'pool2d', 'view', 'linear']
       Alice, Bob = nn.Sequential(), nn.Sequential()
       for i in range(len(name_list)):
-        if i<= self.AB_split:
+        if i<= len(name_list)-self.Bob_layer:
           Alice.add_module(name_list[i],layer_list[i])
           print('Alice contains '+name_list[i])
         else:
@@ -116,28 +116,12 @@ class ResNet(nn.Module):
         return z, hid
 
 
-def ResNet18(num_classes, AB_split):
-    return ResNet(BasicBlock, [2, 2, 2, 2],num_classes=num_classes, AB_split=AB_split)
-
-
-def ResNet34(num_classes, AB_split):
-    return ResNet(BasicBlock, [3, 4, 6, 3],num_classes=num_classes, AB_split=AB_split)
-
-
-def ResNet50(num_classes, AB_split):
-    return ResNet(Bottleneck, [3, 4, 6, 3],num_classes=num_classes, AB_split=AB_split)
-
-
-def ResNet101(num_classes, AB_split):
-    return ResNet(Bottleneck, [3, 4, 23, 3],num_classes=num_classes, AB_split=AB_split)
-
-
-def ResNet152(num_classes, AB_split):
-    return ResNet(Bottleneck, [3, 8, 36, 3],num_classes=num_classes, AB_split=AB_split)
+def ResNet18(num_classes, Bob_layer):
+    return ResNet(BasicBlock, [2, 2, 2, 2],num_classes=num_classes, Bob_layer=Bob_layer)
 
 
 def test():
-    net = ResNet18(num_classes=10, AB_split=6)
+    net = ResNet18(num_classes=10, Bob_layer=1)
     y = net(torch.randn(1, 3, 32, 32))
     print(y.size())
 

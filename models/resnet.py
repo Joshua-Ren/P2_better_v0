@@ -84,7 +84,6 @@ class BasicBlock(nn.Module):
 
         return out
 
-
 class Bottleneck(nn.Module):
     # Bottleneck in torchvision places the stride for downsampling at 3x3 convolution(self.conv2)
     # while original implementation places the stride at the first 1x1 convolution(self.conv1)
@@ -331,8 +330,5 @@ class ResNet(nn.Module):
         return z, hid        
         #return self._forward_impl(x)
         
-def ResNet18(num_classes, Bob_layer):
-    return ResNet(BasicBlock, [2, 2, 2, 2],num_classes=num_classes, Bob_layer=Bob_layer)
-     
 def ResNet50(num_classes, Bob_layer):
     return ResNet(Bottleneck, [3, 4, 6, 3],num_classes=num_classes, Bob_layer=Bob_layer)
