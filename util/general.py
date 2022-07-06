@@ -94,6 +94,8 @@ def load_checkpoint(args, model, ckp_path, which_part='alice'):
             mis_k, unex_k = model.head.load_state_dict(torch.load(ckp_path),strict=False)
         elif args.model.startswith('res'):
             mis_k, unex_k = model.Bob.load_state_dict(torch.load(ckp_path),strict=False)
+    elif which_part.lower()=='all':
+        mis_k, unex_k = model.load_state_dict(torch.load(ckp_path),strict=False)    
     else:
         print('which_part must be alice or bob')
     return mis_k, unex_k
