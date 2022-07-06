@@ -154,8 +154,11 @@ def main(args):
     # ================== Create the model and copy alice parameters ==================
     seed_model = get_init_net(args)
     alice_path = os.path.join(args.work_dir, args.alice_name)
-    load_checkpoint(args, seed_model, alice_path, which_part='alice')
-
+    mis_k, unex_k = load_checkpoint(args, seed_model, alice_path, which_part='alice')
+    print('=======mis_k============')
+    print(mis_k)
+    print('=======unex_k============')
+    print(unex_k)
     # ================== Get some common settings ==================
     if mixup_fn is not None:
         # smoothing is handled with mixup label transform
