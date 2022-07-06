@@ -134,6 +134,23 @@ class ResNet(nn.Module):
             Bob.add_module('flatten', self.flatten)      
             Bob.add_module('fc',self.fc)            
         return Alice, Bob
+
+    def forward(self, x):
+        z = self.Alice(x)
+        hid = self.Bob(z)
+        return z, hid
+
+
+def ResNet18(num_classes, Bob_layer):
+    return ResNet(BasicBlock, [2, 2, 2, 2],num_classes=num_classes, Bob_layer=Bob_layer)
+
+
+def test():
+    net = ResNet18(num_classes=10, Bob_layer=1)
+    y = net(torch.randn(1, 3, 32, 32))
+    print(y.size())
+
+# test()
 '''
     def _Alice_Bob_split(self):
       layer_list = [self.layer0, self.layer1, self.layer2, self.layer3, 
@@ -157,19 +174,3 @@ class ResNet(nn.Module):
             self.in_planes = planes * block.expansion
         return nn.Sequential(*layers)
 '''
-    def forward(self, x):
-        z = self.Alice(x)
-        hid = self.Bob(z)
-        return z, hid
-
-
-def ResNet18(num_classes, Bob_layer):
-    return ResNet(BasicBlock, [2, 2, 2, 2],num_classes=num_classes, Bob_layer=Bob_layer)
-
-
-def test():
-    net = ResNet18(num_classes=10, Bob_layer=1)
-    y = net(torch.randn(1, 3, 32, 32))
-    print(y.size())
-
-# test()
