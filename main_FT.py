@@ -124,7 +124,7 @@ def main(args):
     
     # =================== Initialize wandb ========================
     run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
-    save_path = os.join(args.work_dir, run_name)
+    save_path = os.path.join(args.work_dir, run_name)
             # -------- save results in this folder
     if not os.path.exists(save_path):
         os.makedirs(save_path)
@@ -156,7 +156,7 @@ def main(args):
     
     # ================== Create the model and copy alice parameters ==================
     seed_model = get_init_net(args)
-    alice_path = os.join.path(args.work_dir, args.alice_name)
+    alice_path = os.path.join.path(args.work_dir, args.alice_name)
     load_checkpoint(args, seed_model, alice_path, which_part='alice')
 
     # ================== Get some common settings ==================

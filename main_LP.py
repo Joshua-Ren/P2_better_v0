@@ -120,7 +120,7 @@ def main(args):
     
     # =================== Initialize wandb ========================
     run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
-    save_path = os.join(args.work_dir, run_name)
+    save_path = os.path.join(args.work_dir, run_name)
             # -------- save bob's checkpoints in this folder
     if not os.path.exists(save_path):
         os.makedirs(save_path)
@@ -184,8 +184,5 @@ def main(args):
 if __name__ == '__main__':
     args = get_args_parser()
     args = args.parse_args()
-    if args.dataset=='cifar10' or args.dataset=='stl10':
-        args.nb_classes=10
-    elif args.dataset=='cifar100':
-        args.nb_class=100
+    args = args_get_class(args)
     main(args)
