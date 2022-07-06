@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -A NLP-CDT-SL2-GPU
 #SBATCH -p ampere
-#SBATCH --job-name=stage2_ft
+#SBATCH --job-name=LP
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
@@ -23,9 +23,8 @@ source /home/sg955/functorch-env/bin/activate
 
 cd /home/sg955/GitWS/P2_better_v0/
 
-srun python main_stage2_FT.py \
---batch_size 128  --dataset stl10 --figsize 32 --loss_type ce --world_size 1 --seed -1 \
---blr 0.0001 \
---work_dir ./results/C10_fs32_ce/ \
---LP_dir STL10_blr \
---run_name C10_STL10blr_FT_1en4
+srun python main_LP.py \
+--batch_size 128  --dataset stl10 --figsize 224 --loss_type ce \
+--lr 0.0001 \
+--work_dir ./results/C10_res18_PT \
+--run_name LP_STL10
