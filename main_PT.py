@@ -37,8 +37,8 @@ def get_args_parser():
     # Model parameters
     parser.add_argument('--model', default='resnet18', type=str, metavar='MODEL',
                         help='only for resnet 18')
-    parser.add_argument('--figsize', default=32, type=int,
-                        help='images input size, cifar is 32')
+    parser.add_argument('--figsize', default=224, type=int,
+                        help='images input size, all use 224')
     parser.add_argument('--Bob_layer', default=1, type=int,
                         help='1: only last fc, 2: fc+layer4, 3:fc+layer43, 4: fc+layer432')
 
@@ -47,7 +47,7 @@ def get_args_parser():
                         help='can be mse or ce')    
     parser.add_argument('--optim_type', type=str, default='sgd',
                         help='can be sgd or adam')
-    parser.add_argument('--lr', type=float, default=1e-1, metavar='LR',
+    parser.add_argument('--lr', type=float, default=1e-2, metavar='LR',
                         help='learning rate (absolute lr)')
     #parser.add_argument('--clip_grad', type=float, default=10, metavar='NORM',
     #                    help='Clip gradient norm (default: None, no clipping)')
