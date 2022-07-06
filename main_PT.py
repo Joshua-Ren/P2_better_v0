@@ -47,7 +47,7 @@ def get_args_parser():
                         help='can be mse or ce')    
     parser.add_argument('--optim_type', type=str, default='sgd',
                         help='can be sgd or adam')
-    parser.add_argument('--lr', type=float, default=1e-3, metavar='LR',
+    parser.add_argument('--lr', type=float, default=1e-1, metavar='LR',
                         help='learning rate (absolute lr)')
     #parser.add_argument('--clip_grad', type=float, default=10, metavar='NORM',
     #                    help='Clip gradient norm (default: None, no clipping)')
