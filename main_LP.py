@@ -32,20 +32,22 @@ def get_args_parser():
     parser = argparse.ArgumentParser('Stage2 linear prob one GPU', add_help=False)
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * # gpus')
-    parser.add_argument('--lp_epochs', default=8192, type=int)
+    parser.add_argument('--epochs', default=8192, type=int)
     parser.add_argument('--scheduler_epochs', default=8192, type=int)
     parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 3, 4, 6, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192], type=list,
                         help='which vector_ep we select for the FT phase')
 
     # Pretrain checkpoint
-    parser.add_argument('--work_dir', default='./results/C10_fs32_ce/',
+    parser.add_argument('--work_dir', default=None,
                         help='path of the pretrained checkpoint')
-
+    parser.add_argument('--alice_name', default=None,
+                        help='name of the pretrained checkpoint')
+                        
     # Model parameters
     parser.add_argument('--model', default='resnet18', type=str, metavar='MODEL',
-                        help='Name of model to train')
-    parser.add_argument('--figsize', default=32, type=int,
-                        help='images input size, cifar is 32')
+                        help='Name of model to train, resnet18, resnet50, vit16')
+    parser.add_argument('--figsize', default=224, type=int,
+                        help='images input size, all use 224')
     parser.add_argument('--Bob_layer', default=1, type=int,
                         help='1: only last fc, 2: fc+layer4, 3:fc+layer43, 4: fc+layer432')
 
@@ -58,7 +60,7 @@ def get_args_parser():
                         help='learning rate (absolute lr)')
     parser.add_argument('--weight_decay', type=float, default=0,
                         help='weight decay (default: 0.05)')
-    parser.add_argument('--min_lr', type=float, default=1e-6, metavar='LR',
+    parser.add_argument('--min_lr', type=float, default=1e-4, metavar='LR',
                         help='lower lr bound for cyclic schedulers that hit 0')
 
     # Augmentation parameters
@@ -83,7 +85,7 @@ def get_args_parser():
 
     # Dataset parameters
     parser.add_argument('--dataset', default='stl10', type=str,
-                        help='can be cifar10, stl10, cifar100, imagenet, domainnet')    
+                        help='can be cifar10, stl10, cifar100, tiny, domainnet')    
     parser.add_argument('--nb_classes', default=10, type=int,
                         help='number of the classification types')
                         
@@ -118,7 +120,7 @@ def main(args):
     
     # =================== Initialize wandb ========================
     run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
-    save_path = args.work_dir + run_name
+    save_path = os.join(args.work_dir, run_name)
             # -------- save bob's checkpoints in this folder
     if not os.path.exists(save_path):
         os.makedirs(save_path)
@@ -151,11 +153,10 @@ def main(args):
     
     # ================== Create the model and copy alice parameters ==================
     seed_model = get_init_net(args)
-    ckp_path = args.work_dir + 'pretrain.pt'
+    ckp_path = os.path.join(args.work_dir, args.alice_name)
     load_checkpoint(args, seed_model, ckp_path, which_part='alice')
 
     # ================== Get some common settings ==================
-    eff_batch_size = args.batch_size * misc.get_world_size()
     if mixup_fn is not None:
         # smoothing is handled with mixup label transform
         criterion = SoftTargetCrossEntropy()
@@ -170,7 +171,7 @@ def main(args):
     model = copy.deepcopy(seed_model)
     model.to(args.device)
     optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
-    for epoch in range(args.lp_epochs):
+    for epoch in range(args.epochs):
         if epoch in args.lp_epoch_list:
             ckp_name = 'bob_ep_'+str(epoch).zfill(4)
             save_checkpoint(args, model, which_part='bob', file_name=ckp_name)
