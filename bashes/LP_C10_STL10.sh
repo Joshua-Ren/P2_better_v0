@@ -28,3 +28,4 @@ srun python main_LP.py \
 --lr 0.0001 \
 --work_dir ./results/C10_res18_PT \
 --run_name LP_STL10
+--alice_name Alice_resnet18_PT.pth
