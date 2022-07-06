@@ -44,7 +44,7 @@ def sort_files(file_list):
 # ========= Functions about the checkpoint
 def save_checkpoint(args, model, which_part='alice', file_name='test'):
     if which_part.lower()=='alice':
-        file_path = os.path.join(args.save_path, 'Alice_', file_name+'.pth')
+        file_path = os.path.join(args.save_path, 'Alice_'+file_name+'.pth')
         if args.model.startswith('vit'):
             torch.save(model.state_dict(), file_path)
         elif args.model.startswith('res'):
