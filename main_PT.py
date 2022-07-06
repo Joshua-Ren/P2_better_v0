@@ -167,13 +167,10 @@ def main(args):
     for epoch in range(args.epochs):
         train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args)
         evaluate(data_loader_val, model, args.device, args)
-    save_checkpoint(args, model, which_part='alice', file_name='resnet18_PT')  # Check whether OK to save the multiGPU model
+    save_checkpoint(args, model, which_part='alice', file_name='resnet18_PT')  
 
 if __name__ == '__main__':
     args = get_args_parser()
     args = args.parse_args()
-    if args.dataset=='cifar10' or args.dataset=='stl10':
-        args.nb_classes=10
-    elif args.dataset=='cifar100':
-        args.nb_classes=100
+    args = args_get_class(args)
     main(args)

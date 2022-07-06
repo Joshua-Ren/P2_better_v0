@@ -73,8 +73,11 @@ def save_checkpoint(args, model, which_part='alice', file_name='test'):
             torch.save(model.head.state_dict(), file_path)
         elif args.model.startswith('res'):
             torch.save(model.Bob.state_dict(), file_path)
+    elif which_part.lower()=='all':
+        file_path = os.path.join(args.save_path, 'All_'+file_name+'.pth')
+        torch.save(model.state_dict(), file_path)
     else:
-        print('which_part must be alice or bob')
+        print('which_part must be alice or bob or all')
         
 def load_checkpoint(args, model, ckp_path, which_part='alice'):
     '''
