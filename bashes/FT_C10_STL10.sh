@@ -27,5 +27,5 @@ srun python main_FT.py \
 --batch_size 128  --dataset stl10 --figsize 32 --loss_type ce \
 --lr 0.001 \
 --work_dir ./results/C10_res18_PT \
---LP_dir LP_STL10 \
+--LP_dir LP_STL10_1en4 \
 --run_name C10_STL_1en3_FT_run1

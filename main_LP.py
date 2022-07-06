@@ -32,8 +32,8 @@ def get_args_parser():
     parser = argparse.ArgumentParser('Stage2 linear prob one GPU', add_help=False)
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * # gpus')
-    parser.add_argument('--epochs', default=4096, type=int)
-    parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 3, 4, 6, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096], type=list,
+    parser.add_argument('--epochs', default=2048, type=int)
+    parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 3, 4, 6, 8, 16, 32, 64, 128, 256, 512, 1024, 2048], type=list,
                         help='which vector_ep we select for the FT phase')
 
     # Pretrain checkpoint
