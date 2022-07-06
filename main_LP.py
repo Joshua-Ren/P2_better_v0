@@ -183,8 +183,9 @@ def main(args):
         if epoch in args.lp_epoch_list:
             ckp_name = 'ep_'+str(epoch).zfill(4)
             save_checkpoint(args, model, which_part='bob', file_name=ckp_name)
-        train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')
         evaluate(data_loader_val, model, args.device, args, train_type='lp')
+        train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')
+        
 
 if __name__ == '__main__':
     args = get_args_parser()
