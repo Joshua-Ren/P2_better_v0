@@ -178,6 +178,7 @@ def main(args):
         optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
     elif args.model in ['vit16']:
         optim_bob, scheduler_bob = get_optimizer(model.head, args)
+    optim_bob, scheduler_bob = get_optimizer(model, args)
     for epoch in range(args.epochs):
         if epoch in args.lp_epoch_list:
             ckp_name = 'ep_'+str(epoch).zfill(4)
