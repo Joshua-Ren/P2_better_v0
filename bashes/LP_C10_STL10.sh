@@ -26,6 +26,6 @@ cd /home/sg955/GitWS/P2_better_v0/
 srun python main_LP.py \
 --batch_size 128  --dataset stl10 --figsize 32 --loss_type ce \
 --lr 0.001 \
---work_dir ./results/C10_res18_fig32_PT \
+--work_dir ./results/C10_res18_PT \
 --alice_name Alice_resnet18_PT.pth \
 --run_name LP_STL10
