@@ -68,7 +68,7 @@ def save_checkpoint(args, model, which_part='alice', file_name='test'):
         elif args.model.startswith('res'):
             torch.save(model.Alice.state_dict(), file_path)
     elif which_part.lower()=='bob':
-        file_path = os.path.join(args.save_path, 'Bob_', file_name+'.pth')
+        file_path = os.path.join(args.save_path, 'Bob_' + file_name+'.pth')
         if args.model.startswith('vit'):
             torch.save(model.head.state_dict(), file_path)
         elif args.model.startswith('res'):
