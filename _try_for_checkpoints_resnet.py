@@ -17,14 +17,13 @@ from util.general import *
 from torchvision import models as M
 
 
-RES_CKP = ['resnet18-classification.pth', 'resnet50-classification.pth', 'resnet50-simclr.pth']
-VIT_CKP = ['vitbase-mae.pth', 'vitbase-dino.pth', 'vitbase-classification.pth']
-ckp_folder = os.path.join('E:\\P2_better_v0\\','analysis','download_checkpoints')
+RES_CKP = ['Alice_resnet18_PT.pth', 'All_resnet18_PT.pth']
+ckp_folder = 'E:\\P2_better_v0\\results\\C10_res18_PT'
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Stage2 linear prob one GPU', add_help=False)
     # Model parameters
-    parser.add_argument('--model', default='resnet50', type=str, metavar='MODEL',
+    parser.add_argument('--model', default='resnet18', type=str, metavar='MODEL',
                         help='Name of model to train')
     parser.add_argument('--figsize', default=32, type=int,
                         help='images input size, cifar is 32')
@@ -36,17 +35,25 @@ def get_args_parser():
 args = get_args_parser()
 args = args.parse_args()
 
-ckp_path = os.path.join(ckp_folder,'resnet50-simclr-new.pth')
+ckp_path = os.path.join(ckp_folder,'All_resnet18_PT.pth')
 ckp_dict = torch.load(ckp_path)
 ckp_key_list = list(ckp_dict.keys())
 
 seed_model = get_init_net(args)
+seed_model = seed_model.cuda()
 seed_dict = seed_model.state_dict()
 seed_key_list = list(seed_dict.keys())
 
+load_model = copy.deepcopy(seed_model)
+missing_keys, unexpected_keys = load_model.Alice.load_state_dict(ckp_dict, strict=False)
+
+n_list = []
+for n,p in load_model.named_parameters():
+    n_list.append(n)
+
 # -------- How to load the Alice's parameters
     # Alice's parameters comes from downloaded checkpoint (or saved during stage1)
-missing_keys, unexpected_keys = seed_model.Alice.load_state_dict(ckp_dict, strict=False)
+
 
 # ------ In stage1, we should save the model using the following way:
 #torch.save(seed_model.Alice.state_dict(),ckp_folder+'/Alice.pth')

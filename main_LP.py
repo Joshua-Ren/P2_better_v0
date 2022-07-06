@@ -56,11 +56,11 @@ def get_args_parser():
                         help='can be mse or ce')    
     parser.add_argument('--optim_type', type=str, default='sgd',
                         help='can be sgd or adam')
-    parser.add_argument('--lr', type=float, default=1e-4, metavar='LR',
+    parser.add_argument('--lr', type=float, default=1e-3, metavar='LR',
                         help='learning rate (absolute lr)')
-    parser.add_argument('--weight_decay', type=float, default=0,
+    parser.add_argument('--weight_decay', type=float, default=0.05,
                         help='weight decay (default: 0.05)')
-    parser.add_argument('--min_lr', type=float, default=1e-4, metavar='LR',
+    parser.add_argument('--min_lr', type=float, default=1e-5, metavar='LR',
                         help='lower lr bound for cyclic schedulers that hit 0')
 
     # Augmentation parameters
@@ -154,12 +154,7 @@ def main(args):
     # ================== Create the model and copy alice parameters ==================
     seed_model = get_init_net(args)
     alice_path = os.path.join(args.work_dir, args.alice_name)
-    mis_k, unex_k = load_checkpoint(args, seed_model, alice_path, which_part='all')
-    #mis_k, unex_k = load_checkpoint(args, seed_model, alice_path, which_part='alice')
-    print('=======mis_k============')
-    print(mis_k)
-    print('=======unex_k============')
-    print(unex_k)
+    mis_k, unex_k = load_checkpoint(args, seed_model, alice_path, which_part='alice')
     # ================== Get some common settings ==================
     if mixup_fn is not None:
         # smoothing is handled with mixup label transform
@@ -178,7 +173,6 @@ def main(args):
         optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
     elif args.model in ['vit16']:
         optim_bob, scheduler_bob = get_optimizer(model.head, args)
-    optim_bob, scheduler_bob = get_optimizer(model, args)
     for epoch in range(args.epochs):
         if epoch in args.lp_epoch_list:
             ckp_name = 'ep_'+str(epoch).zfill(4)

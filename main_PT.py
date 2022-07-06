@@ -167,7 +167,7 @@ def main(args):
     for epoch in range(args.epochs):
         train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args)
         evaluate(data_loader_val, model, args.device, args)
-    save_checkpoint(args, model, which_part='all', file_name='resnet18_PT')  
+    save_checkpoint(args, model, which_part='alice', file_name='resnet18_PT')  
 
 if __name__ == '__main__':
     args = get_args_parser()
