@@ -51,6 +51,8 @@ n_list = []
 for n,p in load_model.named_parameters():
     n_list.append(n)
 
+z,h = seed_model(torch.randn(4,3,32,32).cuda())
+zdot = torch.bmm(z.unsqueeze(1),z.unsqueeze(2)).detach().mean()
 # -------- How to load the Alice's parameters
     # Alice's parameters comes from downloaded checkpoint (or saved during stage1)
 
