@@ -93,14 +93,11 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
                 cos_dist = torch.nn.CosineSimilarity(dim=1)(z0,zt).detach().mean()
                 norm_dist = torch.norm(zt-z0, dim=1).detach().mean()
                 dot_dist = torch.bmm(zt.unsqueeze(1),z0.unsqueeze(2)).detach().mean()
-                print(zt.shape)
-                print(z0.shape)
-                print(dot_dist)
                 zt_dist = torch.norm(zt,dim=1).detach().mean()
                 ztz0_cos.update(cos_dist,targets.size(0))
                 ztz0_norm.update(norm_dist,targets.size(0))
-                if abs(dot_dist)<10000:
-                    ztz0_dot.update(dot_dist.cpu(),targets.size(0))
+                ztz0_dot.update(dot_dist.cpu(),targets.size(0))
+                print(ztz0_dot)
                 zt_norm.update(zt_dist.cpu(),targets.size(0))
 
             hid = hid.detach()
