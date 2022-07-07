@@ -101,7 +101,8 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
         hid = hid.detach()
         pred_idx = hid.data.max(1, keepdim=True)[1]
         print(targets)
-        print(args.nb_class)
+        print(hid)
+        print(criterion(hid, targets))
         
         if args.loss_type=='mse':
             prob = torch.gather(hid,dim=1, index=pred_idx)
