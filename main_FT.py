@@ -191,22 +191,22 @@ def main(args):
             tloss, tacc, grad_bob = train_one_epoch(modelt, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')  
             if vacc >= best_vacc:
                 best_vacc = vacc
-        results['tloss'].append(tloss)
-        results['tacc'].append(tacc)
-        results['vloss'].append(vloss)
-        results['vacc'].append(vacc)
-        results['vprobs'].append(vprobs)
-        results['ztz0_cos'].append(ztz0_cos)
-        results['ztz0_norm'].append(ztz0_norm)
-        results['ztz0_dot'].append(ztz0_dot)
-        results['zt_norm'].append(zt_norm)
-        results['grad_bob'].append(grad_bob)
+            results['tloss'].append(tloss)
+            results['tacc'].append(tacc)
+            results['vloss'].append(vloss)
+            results['vacc'].append(vacc)
+            results['vprobs'].append(vprobs)
+            results['ztz0_cos'].append(ztz0_cos)
+            results['ztz0_norm'].append(ztz0_norm)
+            results['ztz0_dot'].append(ztz0_dot)
+            results['zt_norm'].append(zt_norm)
+            results['grad_bob'].append(grad_bob)
         wandb.log({'ft_last':vacc})
         wandb.log({'ft_best':best_vacc})
         wandb.log({'ft_bob_ep':bob_ep})
         # ----- Save the npy
-    result_save_name = os.path.join(args.save_path, f[:-3]+'npy')
-    np.save(result_save_name, results)
+        result_save_name = os.path.join(args.save_path, f[:-3]+'npy')
+        np.save(result_save_name, results)
 
 
 if __name__ == '__main__':
