@@ -25,7 +25,7 @@ cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_LP.py \
 --batch_size 128  --dataset cifar100 --figsize 32 --loss_type ce \
---lr 0.0002 --weight_decay 0 \
+--lr 0.002 --weight_decay 0 \
 --work_dir ./results/C10_res18_PT \
 --alice_name Alice_resnet18_PT.pth \
---run_name LP_C100_2en4nowd
+--run_name LP_C100_2en3nowd
