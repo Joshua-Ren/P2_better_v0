@@ -90,20 +90,21 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
             if model0 is not None:
                 # ---- may need some change for vit model
                 z0, _ = model0(images)
+                zt, z0 = zt.cpu(), z0.cpu()
                 cos_dist = torch.nn.CosineSimilarity(dim=1)(z0,zt).detach().mean()
                 norm_dist = torch.norm(zt-z0, dim=1).detach().mean()
                 dot_dist = torch.bmm(zt.unsqueeze(1),z0.unsqueeze(2)).detach().mean()
                 zt_dist = torch.norm(zt,dim=1).detach().mean()
                 ztz0_cos.update(cos_dist,targets.size(0))
                 ztz0_norm.update(norm_dist,targets.size(0))
-                ztz0_dot.update(dot_dist.cpu(),targets.size(0))
+                ztz0_dot.update(dot_dist,targets.size(0))
                 print(dot_dist)
                 if torch.isfinite(dot_dist):
                     print(zt)
                     print(z0)
                     print(torch.bmm(zt.unsqueeze(1),z0.unsqueeze(2)).detach())
                     xx=xx
-                zt_norm.update(zt_dist.cpu(),targets.size(0))
+                zt_norm.update(zt_dist,targets.size(0))
 
             hid = hid.detach()
             pred_idx = hid.data.max(1, keepdim=True)[1]
