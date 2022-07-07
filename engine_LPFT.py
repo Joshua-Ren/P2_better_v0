@@ -100,8 +100,7 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
 
         hid = hid.detach()
         pred_idx = hid.data.max(1, keepdim=True)[1]
-        print(targets)
-        print(hid)
+        print(targets.min(),targets.max())
         print(criterion(hid, targets))
         
         if args.loss_type=='mse':
