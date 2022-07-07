@@ -48,7 +48,7 @@ def build_dataset(is_train, args, force_dataset=None):
     elif dataset_name=='cifar100':
         if is_train:
             origin_dataset = torchvision.datasets.CIFAR100('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/cifar100', train=True, download=True, transform=train_T)
-            dataset = Data.TensorDataset(torch.tensor(origin_dataset.data[:10000].transpose(1,3)), torch.tensor(origin_dataset.targets[:10000]))
+            dataset = Data.TensorDataset(torch.tensor(origin_dataset.data[:10000]).transpose(1,3), torch.tensor(origin_dataset.targets[:10000]))
         else:
             dataset = torchvision.datasets.CIFAR100('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/cifar100', train=False, download=True, transform=val_T)
     return dataset
