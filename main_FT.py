@@ -206,8 +206,8 @@ def main(args):
         results['ztz0_dot'].append(ztz0_dot)
         results['zt_norm'].append(zt_norm)
         results['grad_bob'].append(grad_bob)
-        wandb.log({'ft_last':vacc1})
-        wandb.log({'ft_best':best_vacc1})
+        wandb.log({'ft_last':vacc})
+        wandb.log({'ft_best':best_vacc})
         wandb.log({'ft_bob_ep':bob_ep})
         # ----- Save the npy
         result_save_name = os.path.join(save_path, f[:-3]+'.npy')
