@@ -20,12 +20,7 @@ from timm.data.mixup import Mixup
 from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
 
 from util.general import *
-#import util.lr_decay as lrd
-import util.misc as misc
 from util.datasets import build_dataset
-#from util.pos_embed import interpolate_pos_embed
-from util.misc import NativeScalerWithGradNormCount as NativeScaler
-
 from engine_LPFT import train_one_epoch, evaluate
 
 
