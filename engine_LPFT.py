@@ -100,7 +100,7 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
                 print(dot_dist)
                 if torch.isfinite(dot_dist):
                     print(zt)
-                    print(z0
+                    print(z0)
                     print(torch.bmm(zt.unsqueeze(1),z0.unsqueeze(2)).detach())
                     xx=xx
                 zt_norm.update(zt_dist.cpu(),targets.size(0))
