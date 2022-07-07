@@ -97,7 +97,8 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
                 ztz0_cos.update(cos_dist,targets.size(0))
                 ztz0_norm.update(norm_dist,targets.size(0))
                 ztz0_dot.update(dot_dist.cpu(),targets.size(0))
-                print(ztz0_dot)
+                print(zt_dist.shape)
+                print(ztz0_dot.avg)
                 zt_norm.update(zt_dist.cpu(),targets.size(0))
 
             hid = hid.detach()
