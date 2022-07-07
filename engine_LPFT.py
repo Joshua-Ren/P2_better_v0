@@ -27,6 +27,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
         samples = samples.to(args.device, non_blocking=True)
         targets = targets.to(args.device, non_blocking=True)
 
+        print(samples.shape)
         if mixup_fn is not None:
             samples, targets = mixup_fn(samples, targets)
         _, outputs = model(samples)
@@ -99,10 +100,7 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
             zt_norm.update(zt_dist,targets.size(0))
 
         hid = hid.detach()
-        pred_idx = hid.data.max(1, keepdim=True)[1]
-        print(hid.shape)
-        print(criterion(hid, targets))
-        
+        pred_idx = hid.data.max(1, keepdim=True)[1]    
         if args.loss_type=='mse':
             prob = torch.gather(hid,dim=1, index=pred_idx)
             y_oht = F.one_hot(targets, num_classes=args.nb_class).reshape(-1,1)
