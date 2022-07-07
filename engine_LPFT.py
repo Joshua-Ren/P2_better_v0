@@ -98,9 +98,11 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
             ztz0_dot.update(dot_dist,targets.size(0))
             print(dot_dist)
             if torch.isfinite(dot_dist):
+                print(dot_dist)
                 print(zt)
                 print(z0)
                 print(torch.bmm(zt.unsqueeze(1),z0.unsqueeze(2)).detach())
+                print(torch.bmm(zt.unsqueeze(1),z0.unsqueeze(2)).detach().mean())
                 xx=xx
             zt_norm.update(zt_dist,targets.size(0))
 
