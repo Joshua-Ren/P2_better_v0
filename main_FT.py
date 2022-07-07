@@ -205,8 +205,8 @@ def main(args):
         wandb.log({'ft_best':best_vacc})
         wandb.log({'ft_bob_ep':bob_ep})
         # ----- Save the npy
-        result_save_name = os.path.join(args.save_path, f[:-3]+'npy')
-        np.save(result_save_name, results)
+    result_save_name = os.path.join(args.save_path, f[:-3]+'npy')
+    np.save(result_save_name, results)
 
 
 if __name__ == '__main__':
