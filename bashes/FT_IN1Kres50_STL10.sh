@@ -29,4 +29,4 @@ srun python main_FT.py \
 --work_dir ./results/IN1K_res50_PT \
 --alice_name resnet50-classification.pth \
 --LP_dir LP_IN1K50_STL10_2en4wd_f224 \
---run_name FT__LP_IN1K50_STL10_2en4wd_f224__1en3_run1
+--run_name FT__LP_IN1K50_STL10_2en4wd_f224__1en3_run2
