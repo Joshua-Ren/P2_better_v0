@@ -25,7 +25,7 @@ cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_LP.py \
 --batch_size 128  --dataset cifar100 --figsize 224 --loss_type ce --model resnet50 \
---lr 0.0002 --weight_decay 0.05 \
+--lr 0.005 --weight_decay 0.05 \
 --work_dir ./results/IN1K_res50_PT \
 --alice_name resnet50-classification.pth \
---run_name LP_IN1K50_C100_2en4wd_f224
+--run_name LP_IN1K50_C100_5en3wd_f224
