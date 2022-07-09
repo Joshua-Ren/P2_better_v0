@@ -24,9 +24,9 @@ source /home/sg955/functorch-env/bin/activate
 cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_FT.py \
---batch_size 128  --dataset stl10 --figsize 224 --loss_type ce --model resnet50 \
---lr 0.0001 \
+--batch_size 128  --dataset cifar100 --figsize 224 --loss_type ce --model resnet50 \
+--lr 0.001 --epochs 50 \
 --work_dir ./results/IN1K_res50_PT \
 --alice_name resnet50-classification.pth \
---LP_dir LP_IN1K50_STL10_2en4wd_f224 \
---run_name FT__LP_IN1K50_STL10_2en4wd_f224__1en4_run2
+--LP_dir LP_IN1K50_C100_5en3wd_f224 \
+--run_name FT__LP_IN1K50_C100_5en3wd_f224__1en3_run1
