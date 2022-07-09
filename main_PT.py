@@ -102,9 +102,10 @@ def get_args_parser():
 
 def main(args):
     # ================= Prepare for distributed training =====
-    seed = args.seed + misc.get_rank()
-    torch.manual_seed(seed)
-    np.random.seed(seed)
+    if args.seed==0:
+        args.seed = np.random.randint(1,10086)
+    torch.manual_seed(args.seed)
+    np.random.seed(args.seed)
     cudnn.benchmark = True
     
     # ================== Prepare for the dataloader ===============

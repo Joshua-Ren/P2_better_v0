@@ -105,7 +105,7 @@ def get_args_parser():
 
 
 def main(args):
-    if args.seed==-1:
+    if args.seed==0:
         args.seed = np.random.randint(1,10086)
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
