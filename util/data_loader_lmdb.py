@@ -120,5 +120,7 @@ def folder2lmdb(dpath, name="train", write_frequency=5000):
 
 if __name__ == "__main__":
     # generate lmdb
-    folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/ImageNet/", name="train")
-    folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/ImageNet/", name="val")
+    #folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/ImageNet/", name="train")
+    #folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/ImageNet/", name="val")
+    folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/domain/quick", name="train")
+    folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/domain/quick", name="val")
