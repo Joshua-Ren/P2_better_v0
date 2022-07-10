@@ -39,6 +39,8 @@ def args_get_class(args):
         args.nb_classes=10
     elif args.dataset=='cifar100':
         args.nb_classes=100
+    elif args.dataset[:6]=='domain':
+        args.nb_classes=345
     return args
 
 def rnd_seed(seed):
