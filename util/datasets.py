@@ -47,14 +47,15 @@ def build_dataset(is_train, args, force_dataset=None):
         else:
             dataset = torchvision.datasets.CIFAR10(DATA_PATH+'cifar10', train=False, download=True, transform=val_T)
     elif dataset_name=='cifar10p':
+        mean, std =  np.array([0.4914, 0.4822, 0.4465]), np.array([0.2023, 0.1994, 0.2010])
         # ------ This dataset only supports figsize=32, and no augmentation
         if is_train:
-            mean, std =  np.array([0.4914, 0.4822, 0.4465]), np.array([0.2023, 0.1994, 0.2010])
             x, y = np.load(DATA_PATH+'cifar10p1/cifar10.1_v4_data.npy'), np.load(DATA_PATH+'cifar10p1/cifar10.1_v4_labels.npy')
             x = (x/256-mean)/std
             dataset = Data.TensorDataset(torch.tensor(x), torch.tensor(y))
         else:
             x, y = np.load(DATA_PATH+'cifar10p1/cifar10.1_v6_data.npy'), np.load(DATA_PATH+'cifar10p1/cifar10.1_v6_labels.npy')
+            x = (x/256-mean)/std
             dataset = Data.TensorDataset(torch.tensor(x), torch.tensor(y))
     elif dataset_name=='cifar100':
         if is_train:
