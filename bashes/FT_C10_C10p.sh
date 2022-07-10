@@ -29,4 +29,4 @@ srun python main_FT.py \
 --work_dir ./results/C10_res18_PT \
 --alice_name Alice_resnet18_PT.pth \
 --LP_dir LP_C10p_2en4wd \
---run_name FT__LP_C10p_2en4wd__1en3_run2
+--run_name FT__LP_C10p_2en4wd__1en3_run3
