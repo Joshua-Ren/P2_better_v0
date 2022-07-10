@@ -126,7 +126,7 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
             wandb.log({'zt_norm':zt_norm.avg})              
     elif train_type == 'lp':
         wandb.log({'lp_valid_loss':losses.avg})
-        wandb.log({'lp_valid_top1':top1.avg})        
+        wandb.log({'lp_valid_top1':top1.avg})   
     return losses.avg, top1.avg, pb_table, ztz0_cos.avg, ztz0_norm.avg, ztz0_dot.avg, zt_norm.avg
 
 @torch.no_grad()
