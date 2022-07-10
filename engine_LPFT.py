@@ -83,8 +83,8 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
     pb_table = []
     for i, (images,targets) in enumerate(data_loader):
         images = images.to(device, non_blocking=True)
-        print(images.shape)
         targets = targets.to(device, non_blocking=True)
+        images, targets = images.float(), targets.long()
         if images.shape[1]!=3:
             images = images.transpose(1,3)
         # compute output
@@ -137,6 +137,7 @@ def evaluate_ood(data_loader, model, device, args, model0=None, wb_title='ft_val
     for i, (images,targets) in enumerate(data_loader):
         images = images.to(device, non_blocking=True)
         targets = targets.to(device, non_blocking=True)
+        images, targets = images.float(), targets.long()
         if images.shape[1]!=3:
             images = images.transpose(1,3)
         # compute output
