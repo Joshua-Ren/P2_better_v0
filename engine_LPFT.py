@@ -28,7 +28,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
         targets = targets.to(args.device, non_blocking=True)
         samples, targets = samples.float(), targets.long()
         if samples.shape[1]!=3:
-            samples = samples.reshape(1,3)
+            samples = samples.transpose(1,3)
         if mixup_fn is not None:
             samples, targets = mixup_fn(samples, targets)
         _, outputs = model(samples)
@@ -86,7 +86,7 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
         print(images.shape)
         targets = targets.to(device, non_blocking=True)
         if images.shape[1]!=3:
-            images = images.reshape(1,3)
+            images = images.transpose(1,3)
         # compute output
         zt, hid = model(images)
         if model0 is not None:
@@ -138,7 +138,7 @@ def evaluate_ood(data_loader, model, device, args, model0=None, wb_title='ft_val
         images = images.to(device, non_blocking=True)
         targets = targets.to(device, non_blocking=True)
         if images.shape[1]!=3:
-            images = images.reshape(1,3)
+            images = images.transpose(1,3)
         # compute output
         zt, hid = model(images)
         prec1, prec5 = accuracy(hid, targets, topk=(1, 5))
