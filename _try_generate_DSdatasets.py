@@ -20,7 +20,7 @@ import torchvision.transforms as T
 import torch.utils.data as Data
 from torchvision import datasets
 train_T=T.Compose([
-                T.Resize(224),
+                T.Resize([224,224]),
                 T.RandomCrop(224, padding=4),
                 T.RandomHorizontalFlip(),
                 T.ToTensor(),
@@ -39,7 +39,7 @@ data_test = Data.TensorDataset(torch.tensor(datav6/256), torch.tensor(labelv6))
 
 # --------------- Domain Net
 
-training_set = datasets.ImageFolder(root = 'E:\\P2_better_v0\\data\\domain_quick\\train',transform=train_T)
+training_set = datasets.ImageFolder(root = 'E:\\P2_better_v0\\data\\domain\\real\\train',transform=train_T)
 data_loader_train = torch.utils.data.DataLoader(
     training_set,
     batch_size=15,
@@ -48,5 +48,3 @@ data_loader_train = torch.utils.data.DataLoader(
 )
 for x,y in data_loader_train:
     break
-
-
