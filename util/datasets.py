@@ -106,7 +106,7 @@ def build_imagenet_transform(is_train, args):
     if is_train:
         # this should always dispatch to transforms_imagenet_train
         transform = create_transform(
-            input_size=args.input_size,
+            input_size=args.figsize,
             is_training=True,
             color_jitter=args.color_jitter,
             auto_augment=args.aa,
@@ -121,15 +121,15 @@ def build_imagenet_transform(is_train, args):
 
     # eval transform
     t = []
-    if args.input_size <= 224:
+    if args.figsize <= 224:
         crop_pct = 224 / 256
     else:
         crop_pct = 1.0
-    size = int(args.input_size / crop_pct)
+    size = int(args.figsize / crop_pct)
     t.append(
         T.Resize(size, interpolation=PIL.Image.BICUBIC),  # to maintain same ratio w.r.t. 224 images
     )
-    t.append(T.CenterCrop(args.input_size))
+    t.append(T.CenterCrop(args.figsize))
 
     t.append(T.ToTensor())
     t.append(T.Normalize(mean, std))
