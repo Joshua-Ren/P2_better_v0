@@ -24,6 +24,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
     grad_bob = AverageMeter()
     model.train(True)
     for data_iter_step, (samples, targets) in enumerate(data_loader):
+        print('T'+str(data_iter_step))
         samples = samples.to(args.device, non_blocking=True)
         targets = targets.to(args.device, non_blocking=True)
         samples, targets = samples.float(), targets.long()
@@ -82,6 +83,7 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
         model0.eval()
     pb_table = []
     for i, (images,targets) in enumerate(data_loader):
+        print(i)
         images = images.to(device, non_blocking=True)
         targets = targets.to(device, non_blocking=True)
         images, targets = images.float(), targets.long()
