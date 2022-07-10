@@ -173,6 +173,7 @@ def main(args):
     elif args.model in ['vit16']:
         optim_bob, scheduler_bob = get_optimizer(model.head, args)
     for epoch in range(args.epochs):
+        print('G'+str(epoch))
         if epoch in args.lp_epoch_list:
             ckp_name = 'ep_'+str(epoch).zfill(4)
             save_checkpoint(args, model, which_part='bob', file_name=ckp_name)

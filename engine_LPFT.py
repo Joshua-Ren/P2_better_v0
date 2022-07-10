@@ -24,7 +24,6 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
     grad_bob = AverageMeter()
     model.train(True)
     for data_iter_step, (samples, targets) in enumerate(data_loader):
-        print('T'+str(data_iter_step))
         samples = samples.to(args.device, non_blocking=True)
         targets = targets.to(args.device, non_blocking=True)
         samples, targets = samples.float(), targets.long()
@@ -54,18 +53,17 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
     prec1, prec5 = accuracy(outputs.data, targets, topk=(1, 5))
     losses.update(loss.data.item(), samples.size(0))
     top1.update(prec1.item(), samples.size(0))
-    if misc.is_main_process():
-        if train_type == 'ft':
-            wandb.log({'ft_epoch':epoch})         
-            wandb.log({'ft_learn_rate':lr})
-            wandb.log({'ft_train_loss':losses.avg})
-            wandb.log({'ft_train_top1':top1.avg})
-            wandb.log({'ft_train_bobnrom':grad_bob.avg})
-        elif train_type == 'lp':
-            wandb.log({'lp_epoch':epoch})         
-            wandb.log({'lp_learn_rate':lr})
-            wandb.log({'lp_train_loss':losses.avg})
-            wandb.log({'lp_train_top1':top1.avg})
+    if train_type == 'ft':
+        wandb.log({'ft_epoch':epoch})         
+        wandb.log({'ft_learn_rate':lr})
+        wandb.log({'ft_train_loss':losses.avg})
+        wandb.log({'ft_train_top1':top1.avg})
+        wandb.log({'ft_train_bobnrom':grad_bob.avg})
+    elif train_type == 'lp':
+        wandb.log({'lp_epoch':epoch})         
+        wandb.log({'lp_learn_rate':lr})
+        wandb.log({'lp_train_loss':losses.avg})
+        wandb.log({'lp_train_top1':top1.avg})
     return losses.avg, top1.avg, grad_bob.avg  
     
 @torch.no_grad()
@@ -83,7 +81,6 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
         model0.eval()
     pb_table = []
     for i, (images,targets) in enumerate(data_loader):
-        print(i)
         images = images.to(device, non_blocking=True)
         targets = targets.to(device, non_blocking=True)
         images, targets = images.float(), targets.long()
