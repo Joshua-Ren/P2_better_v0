@@ -19,8 +19,9 @@ import torch.utils.data as Data
 from timm.data import create_transform
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 from .data_loader_lmdb import ImageFolderLMDB
+import numpy as np
 
-
+DATA_PATH = '/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/'
 def build_dataset(is_train, args, force_dataset=None):
     if force_dataset is None:
         dataset_name = args.dataset
@@ -32,25 +33,48 @@ def build_dataset(is_train, args, force_dataset=None):
     
     if dataset_name=='imagenet':
         transform = build_imagenet_transform(is_train, args)
-        args.data_path = '/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/ImageNet/'
+        args.data_path = DATA_PATH+'ImageNet/'
         root = os.path.join(args.data_path, 'train.lmdb' if is_train else 'val.lmdb')
         dataset = ImageFolderLMDB(root, transform=transform)
     elif dataset_name=='stl10':
         if is_train:
-            dataset = torchvision.datasets.STL10('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/stl10', split='train', download=True, transform=train_T)
+            dataset = torchvision.datasets.STL10(DATA_PATH+'stl10', split='train', download=True, transform=train_T)
         else:
-            dataset = torchvision.datasets.STL10('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/stl10', split='test', download=True, transform=val_T)
+            dataset = torchvision.datasets.STL10(DATA_PATH+'stl10', split='test', download=True, transform=val_T)
     elif dataset_name=='cifar10':
         if is_train:
-            dataset = torchvision.datasets.CIFAR10('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/cifar10', train=True, download=True, transform=train_T)
+            dataset = torchvision.datasets.CIFAR10(DATA_PATH+'cifar10', train=True, download=True, transform=train_T)
         else:
-            dataset = torchvision.datasets.CIFAR10('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/cifar10', train=False, download=True, transform=val_T)
+            dataset = torchvision.datasets.CIFAR10(DATA_PATH+'cifar10', train=False, download=True, transform=val_T)
+    elif dataset_name=='cifar10p':
+        # ------ This dataset only supports figsize=32, and no augmentation
+        if is_train:
+            x, y = np.load(DATA_PATH+'cifar1op1/cifar10.1_v4_data.npy')/256-0.5, np.load(DATA_PATH+'cifar1op1/cifar10.1_v4_labels.npy')
+            dataset = Data.TensorDataset(torch.tensor(x), torch.tensor(y))
+        else:
+            x, y = np.load(DATA_PATH+'cifar1op1/cifar10.1_v6_data.npy'), np.load(DATA_PATH+'cifar1op1/cifar10.1_v6_labels.npy')
+            dataset = Data.TensorDataset(torch.tensor(x), torch.tensor(y))
     elif dataset_name=='cifar100':
         if is_train:
-            dataset = torchvision.datasets.CIFAR100('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/cifar100', train=True, download=True, transform=train_T)
+            dataset = torchvision.datasets.CIFAR100(DATA_PATH+'cifar100', train=True, download=True, transform=train_T)
             #dataset = Data.TensorDataset(torch.tensor(origin_dataset.data[:10000]).transpose(1,3), torch.tensor(origin_dataset.targets[:10000]))
         else:
-            dataset = torchvision.datasets.CIFAR100('/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/cifar100', train=False, download=True, transform=val_T)
+            dataset = torchvision.datasets.CIFAR100(DATA_PATH+'cifar100', train=False, download=True, transform=val_T)
+    elif dataset_name == 'domain_quick':
+        if is_train:
+            dataset = torchvision.datasets.ImageFolder(DATA_PATH+'domain/quick/train', transform=train_T)
+        else:
+            dataset = torchvision.datasets.ImageFolder(DATA_PATH+'domain/quick/val', transform=val_T)
+    elif dataset_name == 'domain_sketch':
+        if is_train:
+            dataset = torchvision.datasets.ImageFolder(DATA_PATH+'domain/sketch/train', transform=train_T)
+        else:
+            dataset = torchvision.datasets.ImageFolder(DATA_PATH+'domain/sketch/val', transform=val_T)
+    elif dataset_name == 'domain_real':
+        if is_train:
+            dataset = torchvision.datasets.ImageFolder(DATA_PATH+'domain/real/train', transform=train_T)
+        else:
+            dataset = torchvision.datasets.ImageFolder(DATA_PATH+'domain/real/val', transform=val_T)        
     return dataset
 
 def get_std_transform(figsize=32):
@@ -59,7 +83,7 @@ def get_std_transform(figsize=32):
     """
     train_T=T.Compose([
                     T.Resize(figsize),
-                    T.RandomCrop(figsize, padding=4),
+                    T.RandomCrop(figsize, padding=int(figsize*0.2)),
                     T.RandomHorizontalFlip(),
                     T.ToTensor(),
                     T.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))

@@ -27,6 +27,8 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
         samples = samples.to(args.device, non_blocking=True)
         targets = targets.to(args.device, non_blocking=True)
         samples, targets = samples.float(), targets.long()
+        if samples.shape[1]!=3:
+            samples = samples.reshape(1,3)
         if mixup_fn is not None:
             samples, targets = mixup_fn(samples, targets)
         _, outputs = model(samples)
