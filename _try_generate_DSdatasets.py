@@ -44,6 +44,7 @@ data_loader_train = torch.utils.data.DataLoader(
     training_set,
     batch_size=15,
     shuffle=True,
+    num_workers=0,
     drop_last=True
 )
 for x,y in data_loader_train:
