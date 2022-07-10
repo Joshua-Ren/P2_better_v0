@@ -83,7 +83,7 @@ def get_args_parser():
 
     # Dataset parameters
     parser.add_argument('--dataset', default='stl10', type=str,
-                        help='can be cifar10, stl10, cifar100, imagenet, domain')    
+                        help='can be cifar10, stl10, cifar100, imagenet, domain_quick')    
     parser.add_argument('--nb_classes', default=10, type=int,
                         help='number of the classification types')
                         
