@@ -74,7 +74,7 @@ def build_dataset(is_train, args, force_dataset=None):
         else:
             dataset = torchvision.datasets.ImageFolder(DATA_PATH+'domain/sketch/val', transform=val_T)
     elif dataset_name == 'domain_real':
-        transform = build_imagenet_transform(is_train, args)
+        transform = train_T if is_train else val_T
         args.data_path = DATA_PATH+'domain/real/'
         root = os.path.join(args.data_path, 'train.lmdb' if is_train else 'val.lmdb')
         dataset = ImageFolderLMDB(root, transform=transform)       
@@ -109,7 +109,6 @@ def build_imagenet_transform(is_train, args):
             input_size=args.figsize,
             is_training=True,
             color_jitter=args.color_jitter,
-            auto_augment=args.aa,
             interpolation='bicubic',
             re_prob=args.reprob,
             re_mode=args.remode,
