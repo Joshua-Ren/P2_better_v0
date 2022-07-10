@@ -49,7 +49,9 @@ def build_dataset(is_train, args, force_dataset=None):
     elif dataset_name=='cifar10p':
         # ------ This dataset only supports figsize=32, and no augmentation
         if is_train:
-            x, y = np.load(DATA_PATH+'cifar10p1/cifar10.1_v4_data.npy')/256-0.5, np.load(DATA_PATH+'cifar10p1/cifar10.1_v4_labels.npy')
+            mean, std =  np.array([0.4914, 0.4822, 0.4465]), np.array([0.2023, 0.1994, 0.2010])
+            x, y = np.load(DATA_PATH+'cifar10p1/cifar10.1_v4_data.npy'), np.load(DATA_PATH+'cifar10p1/cifar10.1_v4_labels.npy')
+            x = (x/256-mean)/std
             dataset = Data.TensorDataset(torch.tensor(x), torch.tensor(y))
         else:
             x, y = np.load(DATA_PATH+'cifar10p1/cifar10.1_v6_data.npy'), np.load(DATA_PATH+'cifar10p1/cifar10.1_v6_labels.npy')
