@@ -83,6 +83,7 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
     pb_table = []
     for i, (images,targets) in enumerate(data_loader):
         images = images.to(device, non_blocking=True)
+        print(images.shape)
         targets = targets.to(device, non_blocking=True)
         if images.shape[1]!=3:
             images = images.reshape(1,3)
@@ -128,3 +129,19 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
         wandb.log({'lp_valid_loss':losses.avg})
         wandb.log({'lp_valid_top1':top1.avg})        
     return losses.avg, top1.avg, pb_table, ztz0_cos.avg, ztz0_norm.avg, ztz0_dot.avg, zt_norm.avg
+
+@torch.no_grad()
+def evaluate(data_loader, model, device, args, model0=None, wb_title='ft_valid_ood1'):
+    top1 = AverageMeter() 
+    model.eval()
+    for i, (images,targets) in enumerate(data_loader):
+        images = images.to(device, non_blocking=True)
+        targets = targets.to(device, non_blocking=True)
+        if images.shape[1]!=3:
+            images = images.reshape(1,3)
+        # compute output
+        zt, hid = model(images)
+        prec1, prec5 = accuracy(hid, targets, topk=(1, 5))
+        top1.update(prec1.item(), images.size(0))
+    wandb.log({wb_title:top1.avg})
+    return top1.avg

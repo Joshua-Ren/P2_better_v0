@@ -191,7 +191,7 @@ def main(args):
         # ----- Search the file, FT all the Bob checkpoints
     for i in range(len(file_list)):
         results = {'tloss':[],'tacc':[], #'tprobs':[],
-                   'vloss':[],'vacc':[],'vprobs':[],
+                   'vloss':[],'vacc':[],'vprobs':[], 'vacc_o1':[], 'vacc_o2':[], 
                 'ztz0_cos':[], 'ztz0_norm':[],'ztz0_dot':[],'zt_norm':[], 
                 'grad_bob':[]}
         modelt = copy.deepcopy(seed_model)
@@ -207,6 +207,9 @@ def main(args):
         best_vacc = 0
         for epoch in range(args.epochs):
             vloss, vacc, vprobs, ztz0_cos, ztz0_norm, ztz0_dot, zt_norm = evaluate(data_loader_val, modelt, args.device, args, model0=model0, train_type='ft')
+            if args.dataset[:6]=='domain':
+                vacc_o1 = evaluate_ood(data_loader_val_ood1, modelt, args.device, args,wb_title='ft_valid_ood1')
+                vacc_o2 = evaluate_ood(data_loader_val_ood2, modelt, args.device, args,wb_title='ft_valid_ood2')
             tloss, tacc, grad_bob = train_one_epoch(modelt, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')  
             if vacc >= best_vacc:
                 best_vacc = vacc
@@ -214,6 +217,8 @@ def main(args):
             results['tacc'].append(tacc)
             results['vloss'].append(vloss)
             results['vacc'].append(vacc)
+            results['vacc_o1'].append(vacc_o1)
+            results['vacc_o2'].append(vacc_o2)
             results['vprobs'].append(vprobs)
             results['ztz0_cos'].append(ztz0_cos)
             results['ztz0_norm'].append(ztz0_norm)
