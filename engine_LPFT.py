@@ -131,7 +131,7 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
     return losses.avg, top1.avg, pb_table, ztz0_cos.avg, ztz0_norm.avg, ztz0_dot.avg, zt_norm.avg
 
 @torch.no_grad()
-def evaluate(data_loader, model, device, args, model0=None, wb_title='ft_valid_ood1'):
+def evaluate_ood(data_loader, model, device, args, model0=None, wb_title='ft_valid_ood1'):
     top1 = AverageMeter() 
     model.eval()
     for i, (images,targets) in enumerate(data_loader):
