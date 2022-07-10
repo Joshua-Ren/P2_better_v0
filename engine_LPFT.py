@@ -84,7 +84,8 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
     for i, (images,targets) in enumerate(data_loader):
         images = images.to(device, non_blocking=True)
         targets = targets.to(device, non_blocking=True)
-
+        if images.shape[1]!=3:
+            images = images.reshape(1,3)
         # compute output
         zt, hid = model(images)
         if model0 is not None:

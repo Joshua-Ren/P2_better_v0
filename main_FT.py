@@ -131,7 +131,7 @@ def main(args):
         pin_memory=args.pin_mem,
         drop_last=True,
     )
-
+    
     data_loader_val = torch.utils.data.DataLoader(
         dataset_val, sampler=sampler_val,
         batch_size=args.batch_size,
@@ -140,6 +140,25 @@ def main(args):
         drop_last=True
     )
 
+     # ------- For domainnet, we have OOD vacc
+    if args.dataset=='domain_quick':
+        dataset_val_ood1 = build_dataset(is_train=False, args=args,force_dataset='domain_sketch')
+        dataset_val_ood2 = build_dataset(is_train=False, args=args,force_dataset='domain_real')
+    elif args.dataset=='domain_sketch':
+        dataset_val_ood1 = build_dataset(is_train=False, args=args,force_dataset='domain_quick')
+        dataset_val_ood2 = build_dataset(is_train=False, args=args,force_dataset='domain_real')
+    elif args.dataset=='domain_real':
+        dataset_val_ood1 = build_dataset(is_train=False, args=args,force_dataset='domain_quick')
+        dataset_val_ood2 = build_dataset(is_train=False, args=args,force_dataset='domain_sketch')        
+    
+    if args.dataset[:6]=='domain':
+        data_loader_val_ood1 = torch.utils.data.DataLoader(dataset_val_ood1,
+                                batch_size=args.batch_size, num_workers=args.num_workers,
+                                pin_memory=args.pin_mem, drop_last=True)
+        data_loader_val_ood2 = torch.utils.data.DataLoader(dataset_val_ood2,
+                                batch_size=args.batch_size, num_workers=args.num_workers,
+                                pin_memory=args.pin_mem, drop_last=True)
+    
     mixup_fn = None
     mixup_active = args.mixup > 0 or args.cutmix > 0. or args.cutmix_minmax is not None
     if mixup_active:
