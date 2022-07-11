@@ -21,7 +21,7 @@ from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
 
 from util.general import *
 from util.datasets import build_dataset
-from engine_LPFT import train_one_epoch, evaluate
+from engine_LPFT import train_one_epoch, evaluate, evaluate_ood
 
 
 def get_args_parser():
