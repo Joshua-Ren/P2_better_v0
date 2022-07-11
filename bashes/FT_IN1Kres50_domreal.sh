@@ -4,7 +4,7 @@
 #SBATCH --job-name=FT
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=16
 #SBATCH --time=36:00:00
 #SBATCH --mem-per-cpu=10G
 #SBATCH --output=./logs/stage1.txt 
@@ -24,7 +24,7 @@ source /home/sg955/functorch-env/bin/activate
 cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_FT.py \
---batch_size 128  --dataset domain_real --figsize 224 --loss_type ce --model resnet50 --num_workers 16 \
+--batch_size 128  --dataset domain_real --figsize 224 --loss_type ce --model resnet50 --num_workers 4 \
 --lr 0.0003 --epochs 100 \
 --work_dir ./results/IN1K_res50_PT \
 --alice_name resnet50-classification.pth \
