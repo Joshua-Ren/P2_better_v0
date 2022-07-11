@@ -64,15 +64,15 @@ def build_dataset(is_train, args, force_dataset=None):
         else:
             dataset = torchvision.datasets.CIFAR100(DATA_PATH+'cifar100', train=False, download=True, transform=val_T)
     elif dataset_name == 'domain_quick':
-        if is_train:
-            dataset = torchvision.datasets.ImageFolder(DATA_PATH+'domain/quick/train', transform=train_T)
-        else:
-            dataset = torchvision.datasets.ImageFolder(DATA_PATH+'domain/quick/val', transform=val_T)
+        transform = train_T if is_train else val_T
+        args.data_path = DATA_PATH+'domain/quick/'
+        root = os.path.join(args.data_path, 'train.lmdb' if is_train else 'val.lmdb')
+        dataset = ImageFolderLMDB(root, transform=transform)   
     elif dataset_name == 'domain_sketch':
-        if is_train:
-            dataset = torchvision.datasets.ImageFolder(DATA_PATH+'domain/sketch/train', transform=train_T)
-        else:
-            dataset = torchvision.datasets.ImageFolder(DATA_PATH+'domain/sketch/val', transform=val_T)
+        transform = train_T if is_train else val_T
+        args.data_path = DATA_PATH+'domain/sketch/'
+        root = os.path.join(args.data_path, 'train.lmdb' if is_train else 'val.lmdb')
+        dataset = ImageFolderLMDB(root, transform=transform)   
     elif dataset_name == 'domain_real':
         transform = train_T if is_train else val_T
         args.data_path = DATA_PATH+'domain/real/'
