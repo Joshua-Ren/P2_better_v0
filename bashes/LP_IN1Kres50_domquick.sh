@@ -28,4 +28,4 @@ srun python main_LP.py \
 --lr 0.002 --weight_decay 0.05 \
 --work_dir ./results/IN1K_res50_PT \
 --alice_name resnet50-classification.pth \
---run_name LP_IN1K50_domquick_2en3wd_f224
+--run_name LP_IN1K50_domquicknew_2en3wd_f224

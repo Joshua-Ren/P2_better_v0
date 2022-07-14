@@ -122,8 +122,8 @@ if __name__ == "__main__":
     # generate lmdb
     #folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/ImageNet/", name="train")
     #folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/ImageNet/", name="val")
-    #folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/domain/quick", name="train")
-    #folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/domain/quick", name="val")
+    folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/domain/quick", name="train")
+    folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/domain/quick", name="val")
     folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/domain/sketch", name="train")
     folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/domain/sketch", name="val")
     folder2lmdb("/home/sg955/rds/rds-nlp-cdt-VR7brx3H4V8/datasets/domain/real", name="train")
