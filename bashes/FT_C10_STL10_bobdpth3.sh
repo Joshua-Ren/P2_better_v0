@@ -25,7 +25,7 @@ cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_FT.py \
 --batch_size 128  --dataset stl10 --figsize 32 --loss_type ce --model resnet18 --Bob_depth 3 \
---lr 0.001 \
+--lr 0.001 --epoch 200 \
 --work_dir ./results/C10_res18_PT \
 --alice_name Alice_resnet18_PT.pth \
 --LP_dir LP_STL10_2en4wd_bobdpth3 \
