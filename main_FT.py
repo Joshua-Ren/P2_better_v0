@@ -37,6 +37,8 @@ def get_args_parser():
                         help='Under work-dir, which LP dir we choose')
     parser.add_argument('--alice_name', default=None,
                         help='name of the pretrained checkpoint')
+    parser.add_argument('--target_bob', default=None,
+                        help='name of the target bob checkpoint')
 
 
     # Model parameters
@@ -46,8 +48,6 @@ def get_args_parser():
                         help='images input size, all use 224')
     parser.add_argument('--Bob_layer', default=1, type=int,
                         help='1: only last fc, 2: fc+layer4, 3:fc+layer43, 4: fc+layer432')
-    parser.add_argument('--Bob_depth', default=1, type=int,
-                        help='1: linear, 3: 3-layers MLP, 5: 5-layers MLP')
 
     # Optimizer parameters
     parser.add_argument('--loss_type', type=str, default='ce',
@@ -189,7 +189,10 @@ def main(args):
     # ================== FT all parts, use multiple GPUs
         # ----- Get all checkpoints for Bob
     bob_ckp_folder = os.path.join(args.work_dir, args.LP_dir)
-    file_list = sort_files(os.listdir(bob_ckp_folder))
+    if args.target_bob is None:
+        file_list = sort_files(os.listdir(bob_ckp_folder))
+    else:
+        file_list = [args.target_bob]
         # ----- Search the file, FT all the Bob checkpoints
     for i in range(len(file_list)):
         results = {'tloss':[],'tacc':[], #'tprobs':[],
