@@ -39,7 +39,8 @@ def get_args_parser():
                         help='name of the pretrained checkpoint')
     parser.add_argument('--target_bob', default=None,
                         help='name of the target bob checkpoint')
-
+    parser.add_argument('--Bob_depth', default=1, type=int,
+                        help='1: linear, 3: 3-layers MLP, 5: 5-layers MLP')
 
     # Model parameters
     parser.add_argument('--model', default='resnet18', type=str, metavar='MODEL',
