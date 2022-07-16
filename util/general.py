@@ -130,7 +130,7 @@ def get_init_net(args, force_type=None):
         net_type = force_type
 
     if net_type=='resnet18':
-        net = ResNet18(args.nb_classes, Bob_layer=args.Bob_layer)
+        net = ResNet18(args.nb_classes, Bob_layer=args.Bob_layer, Bob_depth=args.Bob_depth)
     elif net_type=='resnet50':
         net = ResNet50(args.nb_classes, Bob_layer=args.Bob_layer)
     elif net_type=='vit':

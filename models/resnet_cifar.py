@@ -69,7 +69,7 @@ class Bottleneck(nn.Module):
         return out
 
 class ResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=10, Bob_layer = 1):
+    def __init__(self, block, num_blocks, num_classes=10, Bob_layer=1, Bob_depth=1):
       # Alice_Bob_split should be 1, 2, 3, 4, or 6, meaning split after this number
         super(ResNet, self).__init__()
         self.in_planes = 64
@@ -83,9 +83,30 @@ class ResNet(nn.Module):
         self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
         self.avgpool = nn.AvgPool2d(kernel_size=4)
         self.flatten = nn.Flatten()
-        self.fc = nn.Linear(512*block.expansion, num_classes)
 
         self.Bob_layer = Bob_layer
+        self.Bob_depth = Bob_depth
+        if self.Bob_depth == 1:
+            self.fc = nn.Linear(512*block.expansion, num_classes)
+        elif self.Bob_depth == 3:
+            self.fc = nn.Sequential( 
+                        nn.Linear(512*block.expansion, 512),
+                        nn.ReLU(True),
+                        nn.Linear(512, 512),
+                        nn.ReLU(True),
+                        nn.Linear(512, num_classes))
+        elif self.Bob_depth == 5:
+            self.fc = nn.Sequential( 
+                        nn.Linear(512*block.expansion, 512),
+                        nn.ReLU(True),
+                        nn.Linear(512, 512),
+                        nn.ReLU(True),
+                        nn.Linear(512, 512),
+                        nn.ReLU(True),
+                        nn.Linear(512, 512),
+                        nn.ReLU(True),
+                        nn.Linear(512, num_classes))                        
+        
         self.Alice, self.Bob = self._Alice_Bob_split()
 
     def _make_layer(self, block, planes, num_blocks, stride):
@@ -117,7 +138,7 @@ class ResNet(nn.Module):
             Bob = nn.Sequential()
             Bob.add_module('layer4', self.layer4)
             Bob.add_module('avgpool', self.avgpool)
-            Bob.add_module('flatten', self.flatten)      
+            Bob.add_module('flatten', self.flatten)
             Bob.add_module('fc',self.fc)
         elif self.Bob_layer==3:
             Alice = nn.Sequential()
@@ -128,7 +149,7 @@ class ResNet(nn.Module):
             Bob.add_module('layer3', self.layer3) 
             Bob.add_module('layer4', self.layer4)
             Bob.add_module('avgpool', self.avgpool)
-            Bob.add_module('flatten', self.flatten)      
+            Bob.add_module('flatten', self.flatten) 
             Bob.add_module('fc',self.fc)
         elif self.Bob_layer==4:
             Alice = nn.Sequential()
@@ -139,8 +160,8 @@ class ResNet(nn.Module):
             Bob.add_module('layer3', self.layer3) 
             Bob.add_module('layer4', self.layer4)
             Bob.add_module('avgpool', self.avgpool)
-            Bob.add_module('flatten', self.flatten)      
-            Bob.add_module('fc',self.fc)            
+            Bob.add_module('flatten', self.flatten)
+            Bob.add_module('fc',self.fc)
         return Alice, Bob
 
     def forward(self, x):
@@ -149,12 +170,15 @@ class ResNet(nn.Module):
         return z, hid
 
 
-def ResNet18(num_classes, Bob_layer):
-    return ResNet(BasicBlock, [2, 2, 2, 2],num_classes=num_classes, Bob_layer=Bob_layer)
+def ResNet18(num_classes, Bob_layer, Bob_depth):
+    return ResNet(BasicBlock, [2, 2, 2, 2],
+                    num_classes=num_classes, 
+                    Bob_layer=Bob_layer,
+                    Bob_depth=Bob_depth)
 
 
 def test():
-    net = ResNet18(num_classes=10, Bob_layer=1)
+    net = ResNet18(num_classes=10, Bob_layer=1, Bob_depth=1)
     y = net(torch.randn(1, 3, 32, 32))
     print(y.size())
 

@@ -49,6 +49,9 @@ def get_args_parser():
                         help='images input size, cifar and stl use 32')
     parser.add_argument('--Bob_layer', default=1, type=int,
                         help='1: only last fc, 2: fc+layer4, 3:fc+layer43, 4: fc+layer432')
+    parser.add_argument('--Bob_depth', default=1, type=int,
+                        help='1: linear, 3: 3-layers MLP, 5: 5-layers MLP')
+
 
     # Optimizer parameters
     parser.add_argument('--loss_type', type=str, default='ce',
