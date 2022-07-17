@@ -145,13 +145,15 @@ def get_optimizer(model, args):
         if args.scheduler_type=='cosine':
             scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=args.min_lr)
         elif args.scheduler_type=='multistep':
-            scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.scheduler_ratio,gamma=0.1)
+            s_ratio = [args.s1, args.s2, args.s3]
+            scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=s_ratio,gamma=0.1)
     elif args.optim_type.lower()=='adam':
         optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
         if args.scheduler_type=='cosine':
             scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=args.min_lr)
         elif args.scheduler_type=='multistep':
-            scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.scheduler_ratio,gamma=0.1)
+            s_ratio = [args.s1, args.s2, args.s3]
+            scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=s_ratio,gamma=0.1)
     return optimizer, scheduler
 
 # =========== Track the results ==================

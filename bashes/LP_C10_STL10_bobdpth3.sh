@@ -25,7 +25,8 @@ cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_LP.py \
 --batch_size 128  --dataset stl10 --figsize 32 --loss_type ce --model resnet18 --Bob_depth 5 \
---lr 0.0005 --weight_decay 0.05 --optim_type sgd --scheduler_type multistep --scheduler_ratio [100, 200, 400] \
+--lr 0.0005 --weight_decay 0.05 --optim_type sgd --scheduler_type multistep \
+--s1 100 --s2 200 --s3 400 \
 --work_dir ./results/C10_res18_PT \
 --alice_name Alice_resnet18_PT.pth \
 --run_name LP_STL10_5en4wd_bobdpth5
