@@ -29,4 +29,4 @@ srun python main_LP.py \
 --s1 100 --s2 200 --s3 400 \
 --work_dir ./results/C10_res18_PT \
 --alice_name Alice_resnet18_PT.pth \
---run_name LP_STL10_5en4wd_bobdpth5
+--run_name LP_STL10_5en4wd_bobdpth4
