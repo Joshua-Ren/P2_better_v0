@@ -24,8 +24,8 @@ source /home/sg955/functorch-env/bin/activate
 cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_LP.py \
---batch_size 128  --dataset stl10 --figsize 32 --loss_type ce --model resnet18 --Bob_depth 3 \
+--batch_size 128  --dataset stl10 --figsize 32 --loss_type ce --model resnet18 --Bob_depth 5 \
 --lr 0.0002 --weight_decay 0.05 \
 --work_dir ./results/C10_res18_PT \
 --alice_name Alice_resnet18_PT.pth \
---run_name LP_STL10_2en4wd_bobdpth3
+--run_name LP_STL10_2en4wd_bobdpth5
