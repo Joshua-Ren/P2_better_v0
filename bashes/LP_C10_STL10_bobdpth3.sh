@@ -25,7 +25,7 @@ cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_LP.py \
 --batch_size 128  --dataset stl10 --figsize 32 --loss_type ce --model resnet18 --Bob_depth 1 \
---lr 0.0005 --weight_decay 0 --optim_type sgd --scheduler_type cosine --lr_min 0.0005 \
+--lr 0.0005 --weight_decay 0 --optim_type sgd --scheduler_type cosine --min_lr 0.0005 \
 --work_dir ./results/C10_res18_PT \
 --alice_name Alice_resnet18_PT.pth \
 --run_name LP_STL10_5en4nowdnodecay
