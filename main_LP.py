@@ -33,7 +33,7 @@ def get_args_parser():
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * # gpus')
     parser.add_argument('--epochs', default=1024, type=int)
-    parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 3, 4, 6, 8, 16, 32, 64, 128, 256, 512, 1023], type=list,
+    parser.add_argument('--lp_epoch_list',default=[0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1023], type=list,
                         help='which vector_ep we select for the FT phase')
 
     # Pretrain checkpoint
@@ -50,7 +50,7 @@ def get_args_parser():
     parser.add_argument('--Bob_layer', default=1, type=int,
                         help='1: only last fc, 2: fc+layer4, 3:fc+layer43, 4: fc+layer432')
     parser.add_argument('--Bob_depth', default=1, type=int,
-                        help='1: linear, 3: 3-layers MLP, 5: 5-layers MLP')
+                        help='1: linear, 2: 2-layers MLP, 3: 3-layers MLP')
 
 
     # Optimizer parameters
