@@ -63,6 +63,10 @@ def get_args_parser():
                         help='weight decay (default: 0.05)')
     parser.add_argument('--min_lr', type=float, default=1e-5, metavar='LR',
                         help='lower lr bound for cyclic schedulers that hit 0')
+    parser.add_argument('--scheduler', type=str, default='cosine',
+                        help='can be cosine or multistep')
+    parser.add_argument('--scheduler_ratio', type=list, default=[0.3, 0.6],
+                        help='can be cosine or multistep')                            
 
     # Augmentation parameters
     parser.add_argument('--color_jitter', type=float, default=None, metavar='PCT',
