@@ -159,7 +159,7 @@ def get_optimizer(model, args):
             scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=s_ratio,gamma=0.1)
     return optimizer, scheduler
 
-def scheduler_step(optimizer, scheduler, epoch):
+def scheduler_step(args, optimizer, scheduler, epoch):
     if epoch >= args.warmup:
         scheduler.step()
     else:
