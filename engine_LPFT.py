@@ -39,7 +39,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
             loss = criterion(outputs, targets)
         loss_value = loss.item()
         if not math.isfinite(loss_value):
-            print("Loss is {}, stopping training".format(loss_value))
+            print("Loss is {}, stopping traiWning".format(loss_value))
             sys.exit(1)
         optimizer.zero_grad()   
         loss.backward()
@@ -48,7 +48,8 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
         optimizer.step()
         
     # ----- At the end of epoch
-    scheduler.step()
+    scheduler_step(optimizer, scheduler, epoch)
+    #scheduler.step()
     lr = optimizer.param_groups[0]["lr"]
     prec1, prec5 = accuracy(outputs.data, targets, topk=(1, 5))
     losses.update(loss.data.item(), samples.size(0))

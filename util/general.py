@@ -140,17 +140,16 @@ def get_init_net(args, force_type=None):
         print('net structure not supported, only support resnet18, resnet50, vit16')
     return net
 
+
+# ------------ About optimizer 
 def get_optimizer(model, args):
     if args.optim_type.lower()=='sgd':
         optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9,weight_decay=args.weight_decay,nesterov=True)
         if args.scheduler_type=='cosine':
-            tmp_scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=args.min_lr)
+            scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=args.min_lr)
         elif args.scheduler_type=='multistep':
             s_ratio = [args.s1, args.s2, args.s3]
-            tmp_scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=s_ratio,gamma=0.1)
-        scheduler = create_lr_scheduler_with_warmup(tmp_scheduler, 
-                    warmup_start_value=0.0, warmup_end_value=args.lr, warmup_duration=args.warmup)
-        
+            scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=s_ratio,gamma=0.1)       
     elif args.optim_type.lower()=='adam':
         optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
         if args.scheduler_type=='cosine':
@@ -159,6 +158,14 @@ def get_optimizer(model, args):
             s_ratio = [args.s1, args.s2, args.s3]
             scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=s_ratio,gamma=0.1)
     return optimizer, scheduler
+
+def scheduler_step(optimizer, scheduler, epoch):
+    if epoch >= args.warmup:
+        scheduler.step()
+    else:
+        tmp_lr = args.lr*(epoch/args.warmup)
+        optimizer.param_groups[0]['lr'] = tmp_lr
+
 
 # =========== Track the results ==================
 class AverageMeter(object):
