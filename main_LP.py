@@ -66,11 +66,11 @@ def get_args_parser():
                         help='lower lr bound for cyclic schedulers that hit 0')
     parser.add_argument('--scheduler_type', type=str, default='cosine',
                         help='can be cosine or multistep')
-    parser.add_argument('--s1', type=int, nargs='+', default=100,
+    parser.add_argument('--s1', type=int, default=100,
                         help='can be cosine or multistep')                            
-    parser.add_argument('--s2', type=int, nargs='+', default=300,
+    parser.add_argument('--s2', type=int, default=300,
                         help='can be cosine or multistep') 
-    parser.add_argument('--s3', type=int, nargs='+', default=600,
+    parser.add_argument('--s3', type=int, default=600,
                         help='can be cosine or multistep')  
                         
     # Augmentation parameters
