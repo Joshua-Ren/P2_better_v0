@@ -97,15 +97,15 @@ class ResNet(nn.Module):
                         nn.Linear(512, num_classes))
         elif self.Bob_depth == 5:
             self.fc = nn.Sequential( 
-                        nn.Linear(512*block.expansion, 512),
+                        nn.Linear(512*block.expansion, 128),
                         nn.ReLU(True),
-                        nn.Linear(512, 512),
+                        nn.Linear(128, 128),
                         nn.ReLU(True),
-                        nn.Linear(512, 512),
+                        nn.Linear(128, 128),
                         nn.ReLU(True),
-                        nn.Linear(512, 512),
+                        nn.Linear(128, 128),
                         nn.ReLU(True),
-                        nn.Linear(512, num_classes))                        
+                        nn.Linear(128, num_classes))                        
         
         self.Alice, self.Bob = self._Alice_Bob_split()
 
