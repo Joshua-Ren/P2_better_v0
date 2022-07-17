@@ -88,14 +88,14 @@ class ResNet(nn.Module):
         self.Bob_depth = Bob_depth
         if self.Bob_depth == 1:
             self.fc = nn.Linear(512*block.expansion, num_classes)
-        elif self.Bob_depth == 5:#self.Bob_depth == 3:
+        elif self.Bob_depth == 3:
             self.fc = nn.Sequential( 
                         nn.Linear(512*block.expansion, 512),
                         nn.ReLU(True),
                         nn.Linear(512, 512),
                         nn.ReLU(True),
                         nn.Linear(512, num_classes))
-        elif self.Bob_depth == 10:#self.Bob_depth == 5:
+        elif self.Bob_depth == 5:
             self.fc = nn.Sequential( 
                         nn.Linear(512*block.expansion, 512),
                         nn.ReLU(True),
