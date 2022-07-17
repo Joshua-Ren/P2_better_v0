@@ -22,6 +22,7 @@ import sys
 sys.path.append("..")
 from models.resnet import ResNet50
 from models.resnet_cifar import ResNet18
+from ignite.handlers.param_scheduler import create_lr_scheduler_with_warmup
 
 def get_bob_grad_norm(args, model):
     tmp_pgrad_bob = torch.tensor([],requires_grad=False).cuda()
@@ -143,11 +144,13 @@ def get_optimizer(model, args):
     if args.optim_type.lower()=='sgd':
         optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9,weight_decay=args.weight_decay,nesterov=True)
         if args.scheduler_type=='cosine':
-            scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=args.min_lr)
+            tmp_scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=args.min_lr)
         elif args.scheduler_type=='multistep':
             s_ratio = [args.s1, args.s2, args.s3]
-            #s_ratio = [100, 200, 400]
-            scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=s_ratio,gamma=0.1)
+            tmp_scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=s_ratio,gamma=0.1)
+        scheduler = create_lr_scheduler_with_warmup(tmp_scheduler, 
+                    warmup_start_value=0.0, warmup_end_value=args.lr, warmup_duration=args.warmup)
+        
     elif args.optim_type.lower()=='adam':
         optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
         if args.scheduler_type=='cosine':

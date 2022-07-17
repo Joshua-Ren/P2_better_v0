@@ -63,6 +63,8 @@ def get_args_parser():
                         help='weight decay (default: 0.05)')
     parser.add_argument('--min_lr', type=float, default=1e-5, metavar='LR',
                         help='lower lr bound for cyclic schedulers that hit 0')
+    parser.add_argument('--warmup', type=int, default=0,
+                        help='warmup epochs')
     parser.add_argument('--scheduler_type', type=str, default='cosine',
                         help='can be cosine or multistep')
     parser.add_argument('--s1', type=int, default=100,
