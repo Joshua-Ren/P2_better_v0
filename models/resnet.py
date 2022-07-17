@@ -152,7 +152,7 @@ class ResNet(nn.Module):
         width_per_group: int = 64,
         replace_stride_with_dilation: Optional[List[bool]] = None,
         norm_layer: Optional[Callable[..., nn.Module]] = None,
-        Bob_layer = 1
+        Bob_layer = 1, Bob_depth=1
     ) -> None:
         super().__init__()
         if norm_layer is None:
@@ -183,9 +183,22 @@ class ResNet(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         # ------ADD: Treat flattern option as a layer -----------
         self.flatten = nn.Flatten()
-        self.fc = nn.Linear(512 * block.expansion, num_classes)
-        
         self.Bob_layer = Bob_layer
+        self.Bob_depth = Bob_depth
+        if self.Bob_depth == 1:
+            self.fc = nn.Linear(512*block.expansion, num_classes)
+        elif self.Bob_depth == 2:
+            self.fc = nn.Sequential( 
+                        nn.Linear(512*block.expansion, 2048),
+                        nn.ReLU(True),
+                        nn.Linear(2048, num_classes))        
+        elif self.Bob_depth == 3:
+            self.fc = nn.Sequential( 
+                        nn.Linear(512*block.expansion, 512),
+                        nn.ReLU(True),
+                        nn.Linear(512, 512),
+                        nn.ReLU(True),
+                        nn.Linear(512, num_classes))         
         self.Alice, self.Bob = self._Alice_Bob_split()
 
         for m in self.modules():
@@ -330,5 +343,8 @@ class ResNet(nn.Module):
         return z, hid        
         #return self._forward_impl(x)
         
-def ResNet50(num_classes, Bob_layer):
-    return ResNet(Bottleneck, [3, 4, 6, 3],num_classes=num_classes, Bob_layer=Bob_layer)
+def ResNet50(num_classes, Bob_layer, Bob_depth):
+    return ResNet(Bottleneck, [3, 4, 6, 3],
+                    num_classes=num_classes, 
+                    Bob_layer=Bob_layer, 
+                    Bob_depth=Bob_depth)

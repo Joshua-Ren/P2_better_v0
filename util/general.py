@@ -133,7 +133,7 @@ def get_init_net(args, force_type=None):
     if net_type=='resnet18':
         net = ResNet18(args.nb_classes, Bob_layer=args.Bob_layer, Bob_depth=args.Bob_depth)
     elif net_type=='resnet50':
-        net = ResNet50(args.nb_classes, Bob_layer=args.Bob_layer)
+        net = ResNet50(args.nb_classes, Bob_layer=args.Bob_layer, Bob_depth=args.Bob_depth)
     elif net_type=='vit':
         net = timm.create_model('vit_base_patch16_224', pretrained=False, num_classes=args.nb_classes)
     else:
