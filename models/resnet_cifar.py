@@ -99,8 +99,8 @@ class ResNet(nn.Module):
             self.fc = nn.Sequential( 
                         nn.Linear(512*block.expansion, 128),
                         nn.ReLU(True),
-                        #nn.Linear(128, 128),
-                        #nn.ReLU(True),
+                        nn.Linear(128, 128),
+                        nn.ReLU(True),
                         #nn.Linear(128, 128),
                         #nn.ReLU(True),
                         nn.Linear(128, 128),
