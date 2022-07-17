@@ -25,7 +25,7 @@ cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_LP.py \
 --batch_size 128  --dataset stl10 --figsize 224 --loss_type ce --model resnet50 --Bob_depth 3 \
---lr 0.002 --weight_decay 0 \
+--lr 0.0005 --weight_decay 0 --warmup 10 \
 --work_dir ./results/C10_res50_PT \
 --alice_name Alice_resnet50_PT.pth \
---run_name LP_C1050_STL10_2en3nowd_bobdpth3
+--run_name LP_C1050_STL10_5en4nowd_bobdpth3
