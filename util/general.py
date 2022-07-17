@@ -160,7 +160,7 @@ def get_optimizer(model, args):
     return optimizer, scheduler
 
 def scheduler_step(args, optimizer, scheduler, epoch):
-    if epoch >= args.warmup:
+    if epoch > args.warmup:
         scheduler.step()
     else:
         tmp_lr = args.lr*(epoch/args.warmup)
