@@ -101,8 +101,8 @@ class ResNet(nn.Module):
                         nn.ReLU(True),
                         nn.Linear(128, 128),
                         nn.ReLU(True),
-                        nn.Linear(128, 128),
-                        nn.ReLU(True),
+                        #nn.Linear(128, 128),
+                        #nn.ReLU(True),
                         nn.Linear(128, 128),
                         nn.ReLU(True),
                         nn.Linear(128, num_classes))                        
