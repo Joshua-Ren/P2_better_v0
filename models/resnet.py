@@ -189,9 +189,9 @@ class ResNet(nn.Module):
             self.fc = nn.Linear(512*block.expansion, num_classes)
         elif self.Bob_depth == 2:
             self.fc = nn.Sequential( 
-                        nn.Linear(512*block.expansion, 2048),
+                        nn.Linear(512*block.expansion, 512),
                         nn.ReLU(True),
-                        nn.Linear(2048, num_classes))        
+                        nn.Linear(512, num_classes))        
         elif self.Bob_depth == 3:
             self.fc = nn.Sequential( 
                         nn.Linear(512*block.expansion, 512),
