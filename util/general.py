@@ -22,7 +22,6 @@ import sys
 sys.path.append("..")
 from models.resnet import ResNet50
 from models.resnet_cifar import ResNet18
-from ignite.handlers.param_scheduler import create_lr_scheduler_with_warmup
 
 def get_bob_grad_norm(args, model):
     tmp_pgrad_bob = torch.tensor([],requires_grad=False).cuda()
