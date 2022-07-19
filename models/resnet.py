@@ -179,12 +179,20 @@ class ResNet(nn.Module):
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         # ------ADD: Treat flattern option as a layer -----------
         self.flatten = nn.Flatten()
         self.Bob_layer = Bob_layer
         self.Bob_depth = Bob_depth
+        if self.Bob_layer==1 or self.Bob_layer==2:
+            self.layer4 = self._make_layer(block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
+        elif self.Bob_layer==1.3:
+            self.layer4 = self._make_layer(block, 512, layers[3]-1, stride=2, dilate=replace_stride_with_dilation[2])
+            self.layer4_bob = self._make_layer(block, 512, 1, stride=2, dilate=replace_stride_with_dilation[2])
+        elif self.Bob_layer==1.6:
+            self.layer4 = self._make_layer(block, 512, layers[3]-2, stride=2, dilate=replace_stride_with_dilation[2])
+            self.layer4_bob = self._make_layer(block, 512, 2, stride=2, dilate=replace_stride_with_dilation[2])
+        
         if self.Bob_depth == 1:
             self.fc = nn.Linear(512*block.expansion, num_classes)
         elif self.Bob_depth == 2:
@@ -275,6 +283,36 @@ class ResNet(nn.Module):
             Alice.add_module('flatten', self.flatten)          
             Bob = nn.Sequential()
             Bob.add_module('fc',self.fc)
+        elif self.Bob_layer==1.3:
+            Alice = nn.Sequential()
+            Alice.add_module('conv1', self.conv1)
+            Alice.add_module('bn1', self.bn1)
+            Alice.add_module('relu', self.relu)
+            Alice.add_module('maxpool', self.maxpool)
+            Alice.add_module('layer1', self.layer1)
+            Alice.add_module('layer2', self.layer2)
+            Alice.add_module('layer3', self.layer3)
+            Alice.add_module('layer4', self.layer4)            
+            Bob = nn.Sequential()
+            Bob.add_module('layer4', self.layer4_bob)
+            Bob.add_module('avgpool', self.avgpool)
+            Bob.add_module('flatten', self.flatten)      
+            Bob.add_module('fc',self.fc)    
+        elif self.Bob_layer==1.6:
+            Alice = nn.Sequential()
+            Alice.add_module('conv1', self.conv1)
+            Alice.add_module('bn1', self.bn1)
+            Alice.add_module('relu', self.relu)
+            Alice.add_module('maxpool', self.maxpool)
+            Alice.add_module('layer1', self.layer1)
+            Alice.add_module('layer2', self.layer2)
+            Alice.add_module('layer3', self.layer3)
+            Alice.add_module('layer4', self.layer4)            
+            Bob = nn.Sequential()
+            Bob.add_module('layer4', self.layer4_bob)
+            Bob.add_module('avgpool', self.avgpool)
+            Bob.add_module('flatten', self.flatten)      
+            Bob.add_module('fc',self.fc)    
         elif self.Bob_layer==2:
             Alice = nn.Sequential()
             Alice.add_module('conv1', self.conv1)
@@ -288,35 +326,7 @@ class ResNet(nn.Module):
             Bob.add_module('layer4', self.layer4)
             Bob.add_module('avgpool', self.avgpool)
             Bob.add_module('flatten', self.flatten)      
-            Bob.add_module('fc',self.fc)
-        elif self.Bob_layer==3:
-            Alice = nn.Sequential()
-            Alice.add_module('conv1', self.conv1)
-            Alice.add_module('bn1', self.bn1)
-            Alice.add_module('relu', self.relu)
-            Alice.add_module('maxpool', self.maxpool)
-            Alice.add_module('layer1', self.layer1)
-            Alice.add_module('layer2', self.layer2)
-            Bob = nn.Sequential()
-            Bob.add_module('layer3', self.layer3) 
-            Bob.add_module('layer4', self.layer4)
-            Bob.add_module('avgpool', self.avgpool)
-            Bob.add_module('flatten', self.flatten)      
-            Bob.add_module('fc',self.fc)
-        elif self.Bob_layer==4:
-            Alice = nn.Sequential()
-            Alice.add_module('conv1', self.conv1)
-            Alice.add_module('bn1', self.bn1)
-            Alice.add_module('relu', self.relu)
-            Alice.add_module('maxpool', self.maxpool)
-            Alice.add_module('layer1', self.layer1)
-            Bob = nn.Sequential()
-            Bob.add_module('layer2', self.layer2)
-            Bob.add_module('layer3', self.layer3) 
-            Bob.add_module('layer4', self.layer4)
-            Bob.add_module('avgpool', self.avgpool)
-            Bob.add_module('flatten', self.flatten)      
-            Bob.add_module('fc',self.fc)            
+            Bob.add_module('fc',self.fc)          
         return Alice, Bob
         
     def _forward_impl(self, x: Tensor) -> Tensor:

@@ -27,8 +27,8 @@ def get_args_parser():
                         help='Name of model to train')
     parser.add_argument('--figsize', default=224, type=int,
                         help='images input size, cifar is 32')
-    parser.add_argument('--Bob_layer', default=1, type=int,
-                        help='1: only last fc, 2: fc+layer4, 3:fc+layer43, 4: fc+layer432')
+    parser.add_argument('--Bob_layer', default=1.6, type=float,
+                        help='1: only last fc, 1.3: fc+layer4(C), 1.6: fc+layer4(CB) 2: fc+layer4-all')
     parser.add_argument('--Bob_depth', default=1, type=int,
                         help='1: linear, 2: 2-layers MLP, 3: 3-layers MLP')    
     parser.add_argument('--nb_classes', default=10)
@@ -45,10 +45,13 @@ seed_model = get_init_net(args)
 seed_model = seed_model.cuda()
 seed_dict = seed_model.state_dict()
 seed_key_list = list(seed_dict.keys())
-"""
+
 load_model = copy.deepcopy(seed_model)
 missing_keys, unexpected_keys = load_model.Alice.load_state_dict(ckp_dict, strict=False)
 
+torch.save(load_model.Bob.state_dict(), 'test.bob')
+mis_k, unex_k = load_model.Bob.load_state_dict(torch.load('test.bob'),strict=False)
+"""
 n_list = []
 for n,p in load_model.named_parameters():
     n_list.append(n)

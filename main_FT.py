@@ -45,8 +45,8 @@ def get_args_parser():
                         help='Name of model to train')
     parser.add_argument('--figsize', default=224, type=int,
                         help='images input size, all use 224')
-    parser.add_argument('--Bob_layer', default=1, type=int,
-                        help='1: only last fc, 2: fc+layer4, 3:fc+layer43, 4: fc+layer432')
+    parser.add_argument('--Bob_layer', default=1, type=float,
+                        help='1: only last fc, 1.3: fc+layer4(C), 1.6: fc+layer4(CB) 2: fc+layer4-all')
     parser.add_argument('--Bob_depth', default=1, type=int,
                         help='1: linear, 2: 2-layers MLP, 3: 3-layers MLP')
                         
