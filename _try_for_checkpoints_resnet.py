@@ -27,7 +27,7 @@ def get_args_parser():
                         help='Name of model to train')
     parser.add_argument('--figsize', default=224, type=int,
                         help='images input size, cifar is 32')
-    parser.add_argument('--Bob_layer', default=2, type=int,
+    parser.add_argument('--Bob_layer', default=1, type=int,
                         help='1: only last fc, 2: fc+layer4, 3:fc+layer43, 4: fc+layer432')
     parser.add_argument('--Bob_depth', default=1, type=int,
                         help='1: linear, 2: 2-layers MLP, 3: 3-layers MLP')    
@@ -53,7 +53,7 @@ n_list = []
 for n,p in load_model.named_parameters():
     n_list.append(n)
 
-z,h = seed_model(torch.randn(4,3,32,32).cuda())
+z,h = seed_model(torch.randn(4,3,224,224).cuda())
 zdot = torch.bmm(z.unsqueeze(1),z.unsqueeze(2)).detach().mean()
 
 """

@@ -89,7 +89,7 @@ def evaluate(data_loader, model, device, args, model0=None, train_type='ft'):
             images = images.transpose(1,3)
         # compute output
         zt, hid = model(images)
-        if model0 is not None:
+        if model0 is not None and args.Bob_layer==1:
             # ---- may need some change for vit model
             z0, _ = model0(images)
             zt, z0 = zt.cpu(), z0.cpu()
