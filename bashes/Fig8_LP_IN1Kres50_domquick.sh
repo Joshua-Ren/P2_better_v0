@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -A NLP-CDT-SL2-GPU
 #SBATCH -p ampere
-#SBATCH --job-name=LP
+#SBATCH --job-name=LP-8
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
@@ -24,8 +24,8 @@ source /home/sg955/functorch-env/bin/activate
 cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_LP.py \
---batch_size 128  --dataset domain_quick --figsize 224 --loss_type ce --model resnet50 --num_workers 4 \
---lr 0.002 --weight_decay 0.05 \
+--batch_size 128  --dataset domain_quick --figsize 224 --loss_type ce --model resnet50 --num_workers 4 --Bob_layer 2 \
+--lr 0.002 --weight_decay 0 --min_lr 0.002 --proj_name betterv0_Fig7 \
 --work_dir ./results/IN1K_res50_PT \
 --alice_name resnet50-classification.pth \
---run_name LP_IN1K50_domquicknew_2en3wd_f224
+--run_name LP_IN1K50_domquicknew_boblayer2
