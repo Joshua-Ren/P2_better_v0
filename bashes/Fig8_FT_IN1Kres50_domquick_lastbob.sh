@@ -24,10 +24,10 @@ source /home/sg955/functorch-env/bin/activate
 cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_FT.py \
---batch_size 128  --dataset domain_quick --figsize 224 --loss_type ce --model resnet50 --num_workers 4 --Bob_layer 1.3 \
+--batch_size 128  --dataset domain_quick --figsize 224 --loss_type ce --model resnet50 --num_workers 4 --Bob_layer 1.6 \
 --lr 0.0001 --epochs 200 --proj_name betterv0_FT_1bob \
 --scheduler_type cosine --warmup 10 \
 --work_dir ./results/IN1K_res50_PT --target_bob Bob_ep_0099.pth \
 --alice_name resnet50-classification.pth \
---LP_dir LP_IN1K50_domquicknew_boblayer1p3 \
---run_name FT__LP_IN1K50_domquicknew_boblayer1p3__bob99
+--LP_dir LP_IN1K50_domquicknew_boblayer1p6 \
+--run_name FT__LP_IN1K50_domquicknew_boblayer1p6__bob99
