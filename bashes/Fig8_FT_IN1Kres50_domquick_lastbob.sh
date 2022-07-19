@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -A NLP-CDT-SL2-GPU
 #SBATCH -p ampere
-#SBATCH --job-name=FT
+#SBATCH --job-name=FT-8
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
@@ -24,7 +24,7 @@ source /home/sg955/functorch-env/bin/activate
 cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_FT.py \
---batch_size 128  --dataset domain_quick --figsize 224 --loss_type ce --model resnet50 --num_workers 4 --Bob_depth 3 \
+--batch_size 128  --dataset domain_quick --figsize 224 --loss_type ce --model resnet50 --num_workers 4 --Bob_layer 2 \
 --lr 0.0001 --epochs 200 --proj_name betterv0_FT_1bob \
 --scheduler_type cosine --warmup 10 \
 --work_dir ./results/IN1K_res50_PT --target_bob Bob_ep_0099.pth \
