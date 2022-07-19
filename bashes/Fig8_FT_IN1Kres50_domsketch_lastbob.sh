@@ -27,7 +27,7 @@ srun python main_FT.py \
 --batch_size 128  --dataset domain_sketch --figsize 224 --loss_type ce --model resnet50 --num_workers 4 --Bob_layer 2 \
 --lr 0.0001 --epochs 200 --proj_name betterv0_FT_1bob \
 --scheduler_type cosine --warmup 10 \
---work_dir ./results/IN1K_res50_PT --target_bob Bob_ep_0016.pth \
+--work_dir ./results/IN1K_res50_PT --target_bob Bob_ep_0050.pth \
 --alice_name resnet50-classification.pth \
 --LP_dir LP_IN1K50_domsketchnew_boblayer2 \
---run_name FT__LP_IN1K50_domsketchnew_boblayer2__bob16
+--run_name FT__LP_IN1K50_domsketchnew_boblayer2__bob50
