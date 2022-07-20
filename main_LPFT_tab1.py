@@ -177,6 +177,7 @@ def main(args):
 
     # ================== LP the network ============================
     args.weight_decay = 0
+    args.min_lr = args.lr
     model = copy.deepcopy(seed_model)
     model.to(args.device)
     if args.model in ['resnet18', 'resnet50']:
@@ -191,6 +192,7 @@ def main(args):
     args.weight_decay = 0.05
     args.epochs = args.epochs*2
     args.lr = args.lr*0.1
+    args.min_lr = args.lr*0.01
     results = {'tloss':[],'tacc':[], #'tprobs':[],
                'vloss':[],'vacc':[],'vprobs':[],
             'ztz0_cos':[], 'ztz0_norm':[],'ztz0_dot':[],'zt_norm':[], 
