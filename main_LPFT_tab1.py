@@ -176,6 +176,7 @@ def main(args):
         criterion = torch.nn.MSELoss()
 
     # ================== LP the network ============================
+    args.weight_decay = 0
     model = copy.deepcopy(seed_model)
     model.to(args.device)
     if args.model in ['resnet18', 'resnet50']:
@@ -187,6 +188,7 @@ def main(args):
         train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')  
     bob_ep = 99
     # ================== FT the network ============================
+    args.weight_decay = 0.05
     args.epochs = args.epochs*2
     args.lr = args.lr*0.1
     results = {'tloss':[],'tacc':[], #'tprobs':[],
