@@ -33,7 +33,7 @@ def get_args_parser():
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * # gpus')
     parser.add_argument('--epochs', default=100, type=int)
-    parser.add_argument('--lp_epoch_list',type=list,default=[0,99],#[0, 1, 2, 4, 8, 16, 32, 50, 99], 
+    parser.add_argument('--lp_epoch_list',type=list,default=[99],#[0, 1, 2, 4, 8, 16, 32, 50, 99], 
                         help='which vector_ep we select for the FT phase')
     parser.add_argument('--lp_last',type=int,default=None, 
                         help='which vector_ep we select for the FT phase')
