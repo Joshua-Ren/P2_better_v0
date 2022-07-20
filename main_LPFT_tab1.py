@@ -196,7 +196,7 @@ def main(args):
     model0.to(args.device)
     optimizer, scheduler = get_optimizer(model, args)
     best_vacc = 0
-    for epoch in range(args.epochs):
+    for epoch in range(2*args.epochs):
         vloss, vacc, vprobs, ztz0_cos, ztz0_norm, ztz0_dot, zt_norm = evaluate(data_loader_val, model, args.device, args, model0=model0, train_type='ft')         
         tloss, tacc, grad_bob = train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')  
         if vacc >= best_vacc:
@@ -215,7 +215,7 @@ def main(args):
     wandb.log({'ft_best':best_vacc})
     wandb.log({'ft_bob_ep':bob_ep})
     # ----- Save the npy
-    result_save_name = os.path.join(args.save_path, f[:-3]+'npy')
+    result_save_name = os.path.join(args.save_path +'bob_0099.npy')
     np.save(result_save_name, results)
 
 if __name__ == '__main__':
