@@ -187,6 +187,7 @@ def main(args):
         train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')  
     bob_ep = 99
     # ================== FT the network ============================
+    args.epochs = args.epochs*2
     args.lr = args.lr*0.1
     results = {'tloss':[],'tacc':[], #'tprobs':[],
                'vloss':[],'vacc':[],'vprobs':[],
@@ -196,7 +197,7 @@ def main(args):
     model0.to(args.device)
     optimizer, scheduler = get_optimizer(model, args)
     best_vacc = 0
-    for epoch in range(2*args.epochs):
+    for epoch in range(args.epochs):
         vloss, vacc, vprobs, ztz0_cos, ztz0_norm, ztz0_dot, zt_norm = evaluate(data_loader_val, model, args.device, args, model0=model0, train_type='ft')         
         tloss, tacc, grad_bob = train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')  
         if vacc >= best_vacc:
