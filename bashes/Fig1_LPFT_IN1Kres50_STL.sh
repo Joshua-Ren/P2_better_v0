@@ -24,8 +24,8 @@ source /home/sg955/functorch-env/bin/activate
 cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_LPFT_tab1.py \
---batch_size 128  --dataset stl10 --figsize 32 --loss_type ce --model resnet50 --Bob_depth 3 \
+--batch_size 128  --dataset stl10 --figsize 224 --loss_type ce --model resnet50 --Bob_depth 1 \
 --lr 0.001 --weight_decay 0.05 \
 --work_dir ./results/IN1K_res50_PT --proj_name betterv0_Fig7LP \
 --alice_name resnet50-classification.pth \
---run_name Tab1_IN1Kres50_STL_bobdepth3
+--run_name Tab1_IN1Kres50_STL_bobdepth1
