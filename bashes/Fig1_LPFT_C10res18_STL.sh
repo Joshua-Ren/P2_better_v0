@@ -23,7 +23,7 @@ source /home/sg955/functorch-env/bin/activate
 
 cd /home/sg955/GitWS/P2_better_v0/
 
-srun python main_LP.py \
+srun python main_LPFT_tab1.py \
 --batch_size 128  --dataset stl10 --figsize 32 --loss_type ce --Bob_depth 1 \
 --lr 0.001 --weight_decay 0.05 \
 --work_dir ./results/C10_res18_PT --proj_name betterv0_Fig7LP \
