@@ -132,8 +132,8 @@ def main(args):
     run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
     args.save_path = os.path.join(args.work_dir, run_name)
             # -------- save results in this folder
-    if not os.path.exists(args.save_path):
-        os.makedirs(args.save_path)
+    #if not os.path.exists(args.save_path):
+    #    os.makedirs(args.save_path)
     # ================== Prepare for the dataloader ===============
     data_loader_train = torch.utils.data.DataLoader(
         dataset_train, sampler=sampler_train,
@@ -176,6 +176,8 @@ def main(args):
         criterion = torch.nn.MSELoss()
 
     # ================== LP the network ============================
+    tmp_warmup = copy.deepcopy(args.warmup)
+    args.warmup = 0
     args.weight_decay = 0
     args.min_lr = args.lr
     model = copy.deepcopy(seed_model)
@@ -189,8 +191,9 @@ def main(args):
         train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')  
     bob_ep = 99
     # ================== FT the network ============================
+    args.warmup = tmp_warmup
     args.weight_decay = 0.05
-    args.epochs = args.epochs*2
+    #args.epochs = args.epochs*2
     args.lr = args.lr*0.1
     args.min_lr = args.lr*0.01
     results = {'tloss':[],'tacc':[], #'tprobs':[],
@@ -220,8 +223,8 @@ def main(args):
     wandb.log({'ft_best':best_vacc})
     wandb.log({'ft_bob_ep':bob_ep})
     # ----- Save the npy
-    result_save_name = os.path.join(args.save_path +'bob_0099.npy')
-    np.save(result_save_name, results)
+    #result_save_name = os.path.join(args.save_path +'bob_0099.npy')
+    #np.save(result_save_name, results)
 
 if __name__ == '__main__':
     args = get_args_parser()
