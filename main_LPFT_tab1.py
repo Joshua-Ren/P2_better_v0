@@ -186,9 +186,9 @@ def main(args):
         optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
     elif args.model in ['vit16']:
         optim_bob, scheduler_bob = get_optimizer(model.head, args)
-    for epoch in range(args.epochs):
-        evaluate(data_loader_val, model, args.device, args, train_type='lp')
-        train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')  
+    #for epoch in range(args.epochs):
+    #    evaluate(data_loader_val, model, args.device, args, train_type='lp')
+    #    train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')  
     bob_ep = 99
     # ================== FT the network ============================
     args.warmup = tmp_warmup
@@ -204,7 +204,7 @@ def main(args):
     model0.to(args.device)
     optimizer, scheduler = get_optimizer(model, args)
     best_vacc = 0
-    for epoch in range(args.epochs):
+    for epoch in range(2*args.epochs):
         vloss, vacc, vprobs, ztz0_cos, ztz0_norm, ztz0_dot, zt_norm = evaluate(data_loader_val, model, args.device, args, model0=model0, train_type='ft')         
         tloss, tacc, grad_bob = train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args, train_type='ft')  
         if vacc >= best_vacc:
