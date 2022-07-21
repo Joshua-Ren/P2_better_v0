@@ -194,7 +194,7 @@ def main(args):
     args.warmup = tmp_warmup
     args.weight_decay = 0.05
     #args.epochs = args.epochs*2
-    args.lr = args.lr*0.03
+    args.lr = args.lr*0.01
     args.min_lr = 1e-6#args.lr*0.02
     results = {'tloss':[],'tacc':[], #'tprobs':[],
                'vloss':[],'vacc':[],'vprobs':[],
