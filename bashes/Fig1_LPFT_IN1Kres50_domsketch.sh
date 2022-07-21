@@ -28,4 +28,4 @@ srun python main_LPFT_tab1.py \
 --lr 0.01 --warmup 5 --epochs 200 \
 --work_dir ./results/IN1K_res50_PT --proj_name betterv0_Fig7LP \
 --alice_name resnet50-classification.pth \
---run_name Tab1_IN1Kres50_domsketch_bobdepth2_run3
+--run_name Tab1_IN1Kres50_domsketch_bobdepth2_run4
