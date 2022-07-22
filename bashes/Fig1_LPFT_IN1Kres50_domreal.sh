@@ -25,7 +25,7 @@ cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_LPFT_tab1.py \
 --batch_size 128  --dataset domain_real --figsize 224 --loss_type ce --model resnet50 --num_workers 4 \
---Bob_depth 1 -- Bob_layer 1.3 \
+--Bob_depth 1 --Bob_layer 1.3 \
 --lr 0.01 --warmup 5 --epochs 200 \
 --work_dir ./results/IN1K_res50_PT --proj_name betterv0_tab1FTLP \
 --alice_name resnet50-classification.pth \
