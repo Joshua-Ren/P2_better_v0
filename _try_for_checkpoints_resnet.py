@@ -18,7 +18,7 @@ from torchvision import models as M
 
 
 RES_CKP = ['Alice_resnet18_PT.pth', 'All_resnet18_PT.pth']
-ckp_folder = 'E:\\P2_better_v0\\results\\IN1K_res50_PT'
+ckp_folder = 'E:\\P2_better_v0\\analysis\\download_checkpoints'
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Stage2 linear prob one GPU', add_help=False)
@@ -27,7 +27,7 @@ def get_args_parser():
                         help='Name of model to train')
     parser.add_argument('--figsize', default=224, type=int,
                         help='images input size, cifar is 32')
-    parser.add_argument('--Bob_layer', default=1.6, type=float,
+    parser.add_argument('--Bob_layer', default=1, type=float,
                         help='1: only last fc, 1.3: fc+layer4(C), 1.6: fc+layer4(CB) 2: fc+layer4-all')
     parser.add_argument('--Bob_depth', default=1, type=int,
                         help='1: linear, 2: 2-layers MLP, 3: 3-layers MLP')    
@@ -37,7 +37,7 @@ def get_args_parser():
 args = get_args_parser()
 args = args.parse_args()
 
-ckp_path = os.path.join(ckp_folder,'resnet50-classification.pth')
+ckp_path = os.path.join(ckp_folder,'resnet50-simclr.pth')
 ckp_dict = torch.load(ckp_path)
 ckp_key_list = list(ckp_dict.keys())
 
