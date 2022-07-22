@@ -186,7 +186,7 @@ def main(args):
         optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
     elif args.model in ['vit16']:
         optim_bob, scheduler_bob = get_optimizer(model.head, args)
-    for epoch in range(args.epochs):
+    for epoch in range(50):#range(args.epochs):
         evaluate(data_loader_val, model, args.device, args, train_type='lp')
         train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')  
     bob_ep = 99
