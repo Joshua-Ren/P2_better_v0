@@ -189,13 +189,11 @@ def main(args):
             # ---- Try new method: LS during LP, preserve energy.
     if args.smoothing > 0.:
         criterion = LabelSmoothingCrossEntropy(smoothing=args.smoothing)
-    criterion = torch.nn.CrossEntropyLoss()
     for epoch in range(args.epochs):
         evaluate(data_loader_val, model, args.device, args, train_type='lp')
         train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')  
     bob_ep = 99
     # ================== FT the network ============================
-    criterion = LabelSmoothingCrossEntropy(smoothing=args.smoothing)
     args.warmup = tmp_warmup
     args.weight_decay = 0.05
     #args.epochs = args.epochs*2
