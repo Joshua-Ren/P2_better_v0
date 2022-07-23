@@ -186,7 +186,10 @@ def main(args):
         optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
     elif args.model in ['vit16']:
         optim_bob, scheduler_bob = get_optimizer(model.head, args)
-    for epoch in range(50):#range(args.epochs):
+            # ---- Try new method: LS during LP, preserve energy.
+    if args.smoothing > 0.:
+        criterion = LabelSmoothingCrossEntropy(smoothing=args.smoothing)
+    for epoch in range(args.epochs):
         evaluate(data_loader_val, model, args.device, args, train_type='lp')
         train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')  
     bob_ep = 99
@@ -196,6 +199,7 @@ def main(args):
     #args.epochs = args.epochs*2
     args.lr = args.lr*0.01
     args.min_lr = 1e-6#args.lr*0.02
+    criterion = torch.nn.CrossEntropyLoss()
     results = {'tloss':[],'tacc':[], #'tprobs':[],
                'vloss':[],'vacc':[],'vprobs':[],
             'ztz0_cos':[], 'ztz0_norm':[],'ztz0_dot':[],'zt_norm':[], 
