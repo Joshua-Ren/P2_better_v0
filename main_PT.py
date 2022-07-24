@@ -39,8 +39,10 @@ def get_args_parser():
                         help='only for resnet 18')
     parser.add_argument('--figsize', default=32, type=int,
                         help='images input size, cifar/stl is 32')
-    parser.add_argument('--Bob_layer', default=1, type=int,
-                        help='1: only last fc, 2: fc+layer4, 3:fc+layer43, 4: fc+layer432')
+    parser.add_argument('--Bob_layer', default=1, type=float,
+                        help='1: only last fc, 1.3: fc+layer4(C), 1.6: fc+layer4(CB) 2: fc+layer4-all')
+    parser.add_argument('--Bob_depth', default=1, type=int,
+                        help='1: linear, 2: 2-layers MLP, 3: 3-layers MLP')
 
     # Optimizer parameters
     parser.add_argument('--loss_type', type=str, default='ce',
@@ -55,7 +57,15 @@ def get_args_parser():
                         help='weight decay (default: 0.05)')
     parser.add_argument('--min_lr', type=float, default=1e-6, metavar='LR',
                         help='lower lr bound for cyclic schedulers that hit 0')
-
+    parser.add_argument('--scheduler_type', type=str, default='cosine',
+                        help='can be cosine or multistep')
+    parser.add_argument('--s1', type=int, default=100,
+                        help='can be cosine or multistep')                            
+    parser.add_argument('--s2', type=int, default=300,
+                        help='can be cosine or multistep') 
+    parser.add_argument('--s3', type=int, default=600,
+                        help='can be cosine or multistep')   
+                        
     # Augmentation parameters
     parser.add_argument('--color_jitter', type=float, default=None, metavar='PCT',
                         help='Color jitter factor (enabled only when not using Auto/RandAug)')
