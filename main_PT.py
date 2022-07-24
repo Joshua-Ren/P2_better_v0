@@ -8,6 +8,8 @@ import numpy as np
 import os
 import time
 from pathlib import Path
+
+from sklearn.utils import shuffle
 import models
 
 import torch
@@ -125,8 +127,8 @@ def main(args):
     dataset_train = build_dataset(is_train=True, args=args)
     dataset_val = build_dataset(is_train=False, args=args)
 
-    sampler_train = torch.utils.data.RandomSampler(dataset_train)
-    sampler_val = torch.utils.data.SequentialSampler(dataset_val)
+    #sampler_train = torch.utils.data.RandomSampler(dataset_train)
+    #sampler_val = torch.utils.data.SequentialSampler(dataset_val)
     
     # =================== Initialize wandb ========================
     run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
@@ -137,7 +139,7 @@ def main(args):
 
     # ================== Prepare for the dataloader ===============
     data_loader_train = torch.utils.data.DataLoader(
-        dataset_train, sampler=sampler_train,
+        dataset_train, shuffle=True,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
         pin_memory=args.pin_mem,
@@ -145,7 +147,7 @@ def main(args):
     )
 
     data_loader_val = torch.utils.data.DataLoader(
-        dataset_val, sampler=sampler_val,
+        dataset_val, shuffle=False,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
         pin_memory=args.pin_mem,
