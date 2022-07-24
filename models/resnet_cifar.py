@@ -180,7 +180,7 @@ def ResNet18(num_classes, Bob_layer, Bob_depth):
                     Bob_layer=Bob_layer,
                     Bob_depth=Bob_depth)
 
-def ResNet34(num_classes):
+def ResNet34(num_classes, Bob_layer, Bob_depth):
     return ResNet(BasicBlock, [3, 4, 6, 3],             
                     num_classes=num_classes, 
                     Bob_layer=Bob_layer,
