@@ -24,7 +24,7 @@ source /home/sg955/functorch-env/bin/activate
 cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_PT.py \
---batch_size 128  --lr 0.1 \
+--batch_size 128  --lr 0.1 --warmup 20 \
 --dataset domain_real --figsize 224 --loss_type ce --model resnet50 \
 --run_name Domreal_res50_PT \
 --epochs 200

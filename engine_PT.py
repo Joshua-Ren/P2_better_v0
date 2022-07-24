@@ -50,7 +50,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
         torch.cuda.synchronize()
     
     # ----- At the end of epoch
-    scheduler.step()
+    scheduler_step(args, optimizer, scheduler, epoch)
     lr = optimizer.param_groups[0]["lr"]
     prec1, prec5 = accuracy(outputs.data, targets, topk=(1, 5))
     losses.update(loss.data.item(), samples.size(0))

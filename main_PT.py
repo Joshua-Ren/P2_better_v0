@@ -57,6 +57,8 @@ def get_args_parser():
                         help='weight decay (default: 0.05)')
     parser.add_argument('--min_lr', type=float, default=1e-6, metavar='LR',
                         help='lower lr bound for cyclic schedulers that hit 0')
+    parser.add_argument('--warmup', type=int, default=0,
+                        help='warmup epochs')
     parser.add_argument('--scheduler_type', type=str, default='cosine',
                         help='can be cosine or multistep')
     parser.add_argument('--s1', type=int, default=100,
@@ -65,7 +67,7 @@ def get_args_parser():
                         help='can be cosine or multistep') 
     parser.add_argument('--s3', type=int, default=600,
                         help='can be cosine or multistep')   
-                        
+
     # Augmentation parameters
     parser.add_argument('--color_jitter', type=float, default=None, metavar='PCT',
                         help='Color jitter factor (enabled only when not using Auto/RandAug)')
@@ -178,7 +180,7 @@ def main(args):
     for epoch in range(args.epochs):
         train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args)
         evaluate(data_loader_val, model, args.device, args)
-    save_checkpoint(args, model, which_part='alice', file_name='resnet18_PT')  
+    save_checkpoint(args, model, which_part='alice', file_name='resnet50')  
 
 if __name__ == '__main__':
     args = get_args_parser()
