@@ -86,12 +86,12 @@ class ResNet(nn.Module):
         self.Bob_layer = Bob_layer
         self.Bob_depth = Bob_depth
         if self.Bob_layer==1 or self.Bob_layer==2:
-            self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
+            self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
         elif self.Bob_layer==1.3:
-            self.layer4 = self._make_layer(block, 512, layers[3]-1, stride=2)
+            self.layer4 = self._make_layer(block, 512, num_blocks[3]-1, stride=2)
             self.layer4_bob = self._make_layer(block, 512, 1, stride=2)
         elif self.Bob_layer==1.6:
-            self.layer4 = self._make_layer(block, 512, layers[3]-2, stride=2)
+            self.layer4 = self._make_layer(block, 512, num_blocks[3]-2, stride=2)
             self.layer4_bob = self._make_layer(block, 512, 2, stride=2)        
         
         if self.Bob_depth == 1:
