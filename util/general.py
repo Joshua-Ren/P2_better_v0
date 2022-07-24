@@ -166,7 +166,7 @@ def scheduler_step(args, optimizer, scheduler, epoch):
             scheduler.step()
         else:
             if epoch<5:
-                optimizer.param_groups[0]['lr'] = 1e-4
+                optimizer.param_groups[0]['lr'] = 1e-3
             else:
                 tmp_lr = args.lr*(epoch/args.warmup)
                 optimizer.param_groups[0]['lr'] = tmp_lr
