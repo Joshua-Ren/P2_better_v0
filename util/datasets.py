@@ -86,7 +86,7 @@ def get_std_transform(figsize=32):
     """
     train_T=T.Compose([
                     T.Resize([figsize,figsize]),
-                    T.RandomCrop(figsize, padding=int(figsize*0.2)),
+                    T.RandomCrop(figsize, padding=int(figsize/8)),#*0.2)),
                     T.RandomHorizontalFlip(),
                     T.ToTensor(),
                     T.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
