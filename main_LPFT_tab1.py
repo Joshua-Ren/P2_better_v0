@@ -182,7 +182,7 @@ def main(args):
     args.min_lr = args.lr
     model = copy.deepcopy(seed_model)
     model.to(args.device)
-    if args.model in ['resnet18', 'resnet50']:
+    if args.model in ['resnet18', 'resnet34', 'resnet50']:
         optim_bob, scheduler_bob = get_optimizer(model.Bob, args)
     elif args.model in ['vit16']:
         optim_bob, scheduler_bob = get_optimizer(model.head, args)

@@ -25,7 +25,7 @@ from models.resnet_cifar import ResNet18, ResNet34
 
 def get_bob_grad_norm(args, model):
     tmp_pgrad_bob = torch.tensor([],requires_grad=False).cuda()
-    if args.model in ['resnet18', 'resnet50']:
+    if args.model in ['resnet18', 'resnet34','resnet50']:
         for name, params in model.Bob.named_parameters():
             tmp_pgrad_bob = torch.cat((tmp_pgrad_bob,params.grad.reshape(-1,1)),axis=0)
         return torch.norm(tmp_pgrad_bob).cpu()
