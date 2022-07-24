@@ -102,6 +102,7 @@ def get_args_parser():
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
     parser.add_argument('--seed', default=0, type=int)
+    parser.add_argument('--file_name', default='resnet18', type=str)    
 
     parser.add_argument('--num_workers', default=2, type=int)
     parser.add_argument('--pin_mem', action='store_true',
@@ -180,7 +181,7 @@ def main(args):
     for epoch in range(args.epochs):
         train_one_epoch(model, criterion, data_loader_train, optimizer, scheduler, epoch, mixup_fn, args=args)
         evaluate(data_loader_val, model, args.device, args)
-    save_checkpoint(args, model, which_part='alice', file_name='resnet50')  
+    save_checkpoint(args, model, which_part='alice', file_name=args.file_name)  
 
 if __name__ == '__main__':
     args = get_args_parser()
