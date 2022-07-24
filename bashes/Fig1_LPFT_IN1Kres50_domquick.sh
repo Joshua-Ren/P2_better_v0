@@ -27,6 +27,6 @@ srun python main_LPFT_tab1.py \
 --batch_size 128  --dataset domain_quick --figsize 224 --loss_type ce --model resnet50 --num_workers 4 \
 --Bob_depth 1 --Bob_layer 1 --smoothing 0 \
 --lr 0.01 --warmup 5 --epochs 200 \
---work_dir ./results/IN1K_res50_PT --proj_name betterv0_tab1LPFT \
---alice_name resnet50-classification.pth \
---run_name Tab1_IN1Kres50_domquick_D1L1_baseline
+--work_dir ./results/C10_res50_PT --proj_name betterv0_tab1LPFT \
+--alice_name Alice_resnet50_PT.pth \
+--run_name Tab1_C10res50_domquick_D1L1_baseline
