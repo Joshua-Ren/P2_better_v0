@@ -25,6 +25,6 @@ cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_PT.py \
 --batch_size 128  --lr 0.01 --min_lr 0.00001 \
---dataset cifar10 --figsize 32 --loss_type ce --model resnet18 \
---run_name C10_res18_whathappen --file_name resnet34_blr \
+--dataset cifar100 --figsize 32 --loss_type ce --model resnet34 \
+--run_name C100_res34_PT --file_name resnet34_blr \
 --epochs 200

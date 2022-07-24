@@ -38,15 +38,15 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
             loss = criterion(outputs.reshape(-1,1),y_oht.float())                
         else:
             loss = criterion(outputs, targets)
-    loss_value = loss.item()
+        loss_value = loss.item()
 
-    if not math.isfinite(loss_value):
-        print("Loss is {}, stopping training".format(loss_value))
-        sys.exit(1)
-    optimizer.zero_grad()   
-    loss.backward()
-    #torch.nn.utils.clip_grad_norm_(model.parameters(), 50)
-    optimizer.step()
+        if not math.isfinite(loss_value):
+            print("Loss is {}, stopping training".format(loss_value))
+            sys.exit(1)
+        optimizer.zero_grad()   
+        loss.backward()
+        #torch.nn.utils.clip_grad_norm_(model.parameters(), 50)
+        optimizer.step()
     
     # ----- At the end of epoch
     scheduler.step()
@@ -79,7 +79,7 @@ def evaluate(data_loader, model, device, args):
         if args.loss_type=='mse':
             y_oht = F.one_hot(targets, num_classes=args.nb_class).reshape(-1,1)
             loss = criterion(outputs.reshape(-1,1),y_oht.float())                
-        else:
+        elif args.loss_type=='ce':
             loss = criterion(outputs, targets)
         prec1, prec5 = accuracy(outputs, targets, topk=(1, 5))
         losses.update(loss.data.item(), images.size(0))

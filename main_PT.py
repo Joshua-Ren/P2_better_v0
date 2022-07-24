@@ -167,16 +167,16 @@ def main(args):
     model.to(args.device)
 
     optimizer, scheduler = get_optimizer(model, args)
-
+    
     if mixup_fn is not None:
         # smoothing is handled with mixup label transform
         criterion = SoftTargetCrossEntropy()
     elif args.smoothing > 0.:
         criterion = LabelSmoothingCrossEntropy(smoothing=args.smoothing)
-    else:
-        criterion = torch.nn.CrossEntropyLoss()
     if args.loss_type=='mse':
         criterion = torch.nn.MSELoss()
+    elif args.loss_type=='ce':
+        criterion = torch.nn.CrossEntropyLoss()
     print("criterion = %s" % str(criterion))
 
     for epoch in range(args.epochs):
