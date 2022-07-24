@@ -85,7 +85,7 @@ def evaluate(data_loader, model, device, args):
         losses.update(loss.data.item(), images.size(0))
         top1.update(prec1.item(), images.size(0))
         top5.update(prec5.item(), images.size(0))
-        
+    model.train()    
     wandb.log({'valid_loss':losses.avg})
     wandb.log({'valid_top1':top1.avg})
     wandb.log({'valid_top5':top5.avg})
