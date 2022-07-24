@@ -79,7 +79,6 @@ class ResNet(nn.Module):
         self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
         self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
         self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
         self.avgpool = nn.AvgPool2d(kernel_size=4)
         self.flatten = nn.Flatten()
         # ------ADD: Treat flattern option as a layer -----------
@@ -88,19 +87,19 @@ class ResNet(nn.Module):
         if self.Bob_layer==1 or self.Bob_layer==2:
             self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
         elif self.Bob_layer==1.3:
-            self.layer4 = self._make_layer(block, 512, num_blocks[3]-1, stride=2)
+            self.layer4 = self._make_layer(block, 512, 2, stride=1)
             self.layer4_bob = self._make_layer(block, 512, 1, stride=2)
         elif self.Bob_layer==1.6:
-            self.layer4 = self._make_layer(block, 512, num_blocks[3]-2, stride=2)
+            self.layer4 = self._make_layer(block, 512, 1, stride=1)
             self.layer4_bob = self._make_layer(block, 512, 2, stride=2)        
         
         if self.Bob_depth == 1:
             self.fc = nn.Linear(512*block.expansion, num_classes)
         elif self.Bob_depth == 2:
             self.fc = nn.Sequential( 
-                        nn.Linear(512*block.expansion, 2048),
+                        nn.Linear(512*block.expansion, 512),
                         nn.ReLU(True),
-                        nn.Linear(2048, num_classes))        
+                        nn.Linear(512, num_classes))        
         elif self.Bob_depth == 3:
             self.fc = nn.Sequential( 
                         nn.Linear(512*block.expansion, 512),
@@ -187,9 +186,9 @@ def ResNet34(num_classes, Bob_layer, Bob_depth):
                     Bob_depth=Bob_depth)
 
 def test():
-    net = ResNet18(num_classes=10, Bob_layer=1, Bob_depth=1)
-    y = net(torch.randn(1, 3, 32, 32))
-    print(y.size())
+    net = ResNet34(num_classes=100, Bob_layer=1.6, Bob_depth=1)
+    z,hid = net(torch.randn(5, 3, 32, 32))
+    print(hid.shape)
 
 # test()
 '''
