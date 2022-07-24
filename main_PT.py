@@ -9,7 +9,6 @@ import os
 import time
 from pathlib import Path
 
-from sklearn.utils import shuffle
 import models
 
 import torch
