@@ -21,7 +21,7 @@ import torch.utils.data as Data
 import sys
 sys.path.append("..")
 from models.resnet import ResNet50
-from models.resnet_cifar import ResNet18
+from models.resnet_cifar import ResNet18, ResNet34
 
 def get_bob_grad_norm(args, model):
     tmp_pgrad_bob = torch.tensor([],requires_grad=False).cuda()
@@ -131,6 +131,8 @@ def get_init_net(args, force_type=None):
 
     if net_type=='resnet18':
         net = ResNet18(args.nb_classes, Bob_layer=args.Bob_layer, Bob_depth=args.Bob_depth)
+    elif net_type=='resnet34':
+        net = ResNet34(args.nb_classes, Bob_layer=args.Bob_layer, Bob_depth=args.Bob_depth)
     elif net_type=='resnet50':
         net = ResNet50(args.nb_classes, Bob_layer=args.Bob_layer, Bob_depth=args.Bob_depth)
     elif net_type=='vit':

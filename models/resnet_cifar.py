@@ -74,8 +74,7 @@ class ResNet(nn.Module):
         super(ResNet, self).__init__()
         self.in_planes = 64
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(64)
-
+        self.bn1 = nn.BatchNorm2d(64)     
         self.layer0 = nn.Sequential(self.conv1, self.bn1, nn.ReLU())
         self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
         self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
@@ -83,9 +82,18 @@ class ResNet(nn.Module):
         self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
         self.avgpool = nn.AvgPool2d(kernel_size=4)
         self.flatten = nn.Flatten()
-
+        # ------ADD: Treat flattern option as a layer -----------
         self.Bob_layer = Bob_layer
         self.Bob_depth = Bob_depth
+        if self.Bob_layer==1 or self.Bob_layer==2:
+            self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
+        elif self.Bob_layer==1.3:
+            self.layer4 = self._make_layer(block, 512, layers[3]-1, stride=2)
+            self.layer4_bob = self._make_layer(block, 512, 1, stride=2)
+        elif self.Bob_layer==1.6:
+            self.layer4 = self._make_layer(block, 512, layers[3]-2, stride=2)
+            self.layer4_bob = self._make_layer(block, 512, 2, stride=2)        
+        
         if self.Bob_depth == 1:
             self.fc = nn.Linear(512*block.expansion, num_classes)
         elif self.Bob_depth == 2:
@@ -123,35 +131,37 @@ class ResNet(nn.Module):
             Alice.add_module('flatten', self.flatten)          
             Bob = nn.Sequential()
             Bob.add_module('fc',self.fc)
-        elif self.Bob_layer==2:
+        elif self.Bob_layer==1.3:
             Alice = nn.Sequential()
             Alice.add_module('layer0', self.layer0)
             Alice.add_module('layer1', self.layer1)
             Alice.add_module('layer2', self.layer2)
             Alice.add_module('layer3', self.layer3)    
+            Alice.add_module('layer4', self.layer4)
             Bob = nn.Sequential()
-            Bob.add_module('layer4', self.layer4)
+            Bob.add_module('layer4', self.layer4_bob)
             Bob.add_module('avgpool', self.avgpool)
             Bob.add_module('flatten', self.flatten)
             Bob.add_module('fc',self.fc)
-        elif self.Bob_layer==3:
+        elif self.Bob_layer==1.6:
             Alice = nn.Sequential()
             Alice.add_module('layer0', self.layer0)
             Alice.add_module('layer1', self.layer1)
             Alice.add_module('layer2', self.layer2)
+            Alice.add_module('layer3', self.layer3)    
+            Alice.add_module('layer4', self.layer4)
             Bob = nn.Sequential()
-            Bob.add_module('layer3', self.layer3) 
-            Bob.add_module('layer4', self.layer4)
+            Bob.add_module('layer4', self.layer4_bob)
             Bob.add_module('avgpool', self.avgpool)
             Bob.add_module('flatten', self.flatten) 
             Bob.add_module('fc',self.fc)
-        elif self.Bob_layer==4:
+        elif self.Bob_layer==2:
             Alice = nn.Sequential()
             Alice.add_module('layer0', self.layer0)
             Alice.add_module('layer1', self.layer1)
+            Alice.add_module('layer2', self.layer2)
+            Alice.add_module('layer3', self.layer3) 
             Bob = nn.Sequential()
-            Bob.add_module('layer2', self.layer2)
-            Bob.add_module('layer3', self.layer3) 
             Bob.add_module('layer4', self.layer4)
             Bob.add_module('avgpool', self.avgpool)
             Bob.add_module('flatten', self.flatten)
@@ -170,6 +180,11 @@ def ResNet18(num_classes, Bob_layer, Bob_depth):
                     Bob_layer=Bob_layer,
                     Bob_depth=Bob_depth)
 
+def ResNet34(num_classes):
+    return ResNet(BasicBlock, [3, 4, 6, 3],             
+                    num_classes=num_classes, 
+                    Bob_layer=Bob_layer,
+                    Bob_depth=Bob_depth)
 
 def test():
     net = ResNet18(num_classes=10, Bob_layer=1, Bob_depth=1)
