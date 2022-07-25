@@ -25,8 +25,8 @@ cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_LPFT_tab1.py \
 --batch_size 128  --dataset domain_quick --figsize 224 --loss_type ce --model resnet50 --num_workers 4 \
---Bob_depth 2 --Bob_layer 1 --smoothing 0 \
+--Bob_depth 1 --Bob_layer 1 --smoothing 0 \
 --lr 0.01 --warmup 5 --epochs 200 \
 --work_dir ./results/Domreal_res50_PT --proj_name betterv0_tab1LPFT2 \
 --alice_name Alice_Domreal_resnet50_blr.pth \
---run_name Tab1_Domrealres50_domquick_D2L1
+--run_name Tab1_Domrealres50_domquick_D1L1_baseline

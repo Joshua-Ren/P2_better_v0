@@ -203,7 +203,8 @@ def main(args):
                'vloss':[],'vacc':[],'vprobs':[],
             'ztz0_cos':[], 'ztz0_norm':[],'ztz0_dot':[],'zt_norm':[], 
             'grad_bob':[]}
-    model0 = copy.deepcopy(seed_model)
+    #model0 = copy.deepcopy(seed_model)
+    model0 = copy.deepcopy(model)
     model0.to(args.device)
     optimizer, scheduler = get_optimizer(model, args)
     best_vacc = 0
