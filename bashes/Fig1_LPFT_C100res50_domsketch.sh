@@ -25,8 +25,8 @@ cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_LPFT_tab1.py \
 --batch_size 128  --dataset domain_sketch --figsize 32 --loss_type ce --model resnet34 --num_workers 4 \
---Bob_depth 1 --Bob_layer 2 --smoothing 0 \
+--Bob_depth 2 --Bob_layer 1 --smoothing 0 \
 --lr 0.01 --warmup 5 --epochs 200 \
 --work_dir ./results/C100_res34_PT --proj_name betterv0_tab1LPFT2 \
 --alice_name Alice_resnet34_blr.pth \
---run_name Tab1_C100res34_domsketch_D1L2
+--run_name Tab1_C100res34_domsketch_D2L1
