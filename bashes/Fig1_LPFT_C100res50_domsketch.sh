@@ -29,4 +29,4 @@ srun python main_LPFT_tab1.py \
 --lr 0.01 --warmup 5 --epochs 200 \
 --work_dir ./results/Domreal_res50_PT --proj_name betterv0_tab1LPFT2 \
 --alice_name Alice_Domreal_resnet50_blr.pth \
---run_name Tab1_Domrealres50_domsketch_D2L1
+--run_name Tab1_Domrealres50_domsketch_D1L1_baseline
