@@ -210,16 +210,16 @@ def main(args):
                    'vloss':[],'vacc':[],'vprobs':[], 'vacc_o1':[], 'vacc_o2':[], 
                 'ztz0_cos':[], 'ztz0_norm':[],'ztz0_dot':[],'zt_norm':[], 
                 'grad_bob':[]}
-        modelt = copy.deepcopy(seed_model)
-        model0 = copy.deepcopy(modelt)
+        modelt = copy.deepcopy(seed_model)      
         modelt.to(args.device)
-        model0.to(args.device)
-
         f = file_list[i]
         bob_ep = int(f.split('.')[0].split('_')[-1])
         bob_path = os.path.join(bob_ckp_folder, f)
         load_checkpoint(args, modelt, bob_path, which_part='bob')
         optimizer, scheduler = get_optimizer(modelt, args)
+        model0 = copy.deepcopy(modelt)
+        model0.to(args.device)
+        
         best_vacc = 0
         for epoch in range(args.epochs):
             vloss, vacc, vprobs, ztz0_cos, ztz0_norm, ztz0_dot, zt_norm = evaluate(data_loader_val, modelt, args.device, args, model0=model0, train_type='ft')
