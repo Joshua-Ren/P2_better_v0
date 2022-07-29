@@ -25,8 +25,8 @@ cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_LPFT_tab1.py \
 --batch_size 128  --dataset stl10 --figsize 32 --loss_type ce --model resnet18 --num_workers 4 \
---Bob_depth 1 --Bob_layer 1 --smoothing 0 \
+--Bob_depth 1 --Bob_layer 1 --smoothing 0.3 --FT_smoothing 0 \
 --lr 0.01 --warmup 5 --epochs 200 \
 --work_dir ./results/C10_res18_PT --proj_name betterv0_smthLPFT \
 --alice_name Alice_resnet18_PT.pth \
---run_name Tab1_res18_STL_baseline
+--run_name Tab1_res18_STL_LPsmth0p3
