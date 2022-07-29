@@ -78,6 +78,8 @@ def get_args_parser():
                         help='Color jitter factor (enabled only when not using Auto/RandAug)')
     parser.add_argument('--smoothing', type=float, default=0,
                         help='Label smoothing (default: 0)')
+    parser.add_argument('--FT_smoothing', type=float, default=0,
+                        help='Label smoothing (default: 0)')
 
     # * Mixup params
     parser.add_argument('--mixup', type=float, default=0,
@@ -132,8 +134,8 @@ def main(args):
     run_name = wandb_init(proj_name=args.proj_name, run_name=args.run_name, config_args=args)
     args.save_path = os.path.join(args.work_dir, run_name)
             # -------- save results in this folder
-    #if not os.path.exists(args.save_path):
-    #    os.makedirs(args.save_path)
+    if not os.path.exists(args.save_path):
+        os.makedirs(args.save_path)
     # ================== Prepare for the dataloader ===============
     data_loader_train = torch.utils.data.DataLoader(
         dataset_train, sampler=sampler_train,
@@ -165,17 +167,18 @@ def main(args):
     alice_path = os.path.join(args.work_dir, args.alice_name)
     load_checkpoint(args, seed_model, alice_path, which_part='alice')
     # ================== Get some common settings ==================
-    if mixup_fn is not None:
-        # smoothing is handled with mixup label transform
-        criterion = SoftTargetCrossEntropy()
-    elif args.smoothing > 0.:
-        criterion = LabelSmoothingCrossEntropy(smoothing=args.smoothing)
-    else:
-        criterion = torch.nn.CrossEntropyLoss()
+#    if mixup_fn is not None:
+#        # smoothing is handled with mixup label transform
+#        criterion = SoftTargetCrossEntropy()
+#    else:
+#        criterion = torch.nn.CrossEntropyLoss()
     if args.loss_type=='mse':
         criterion = torch.nn.MSELoss()
-
+    elif args.loss_type=='ce':
+        criterion = torch.nn.CrossEntropyLoss()
     # ================== LP the network ============================
+    if args.smoothing > 0.:
+        criterion = LabelSmoothingCrossEntropy(smoothing=args.smoothing)
     tmp_warmup = copy.deepcopy(args.warmup)
     args.warmup = 0
     args.weight_decay = 0
@@ -187,13 +190,13 @@ def main(args):
     elif args.model in ['vit16']:
         optim_bob, scheduler_bob = get_optimizer(model.head, args)
             # ---- Try new method: LS during LP, preserve energy.
-    if args.smoothing > 0.:
-        criterion = LabelSmoothingCrossEntropy(smoothing=args.smoothing)
     for epoch in range(args.epochs):
         evaluate(data_loader_val, model, args.device, args, train_type='lp')
         train_one_epoch(model, criterion, data_loader_train, optim_bob, scheduler_bob, epoch, mixup_fn, args=args, train_type='lp')  
     bob_ep = 99
     # ================== FT the network ============================
+    if args.FT_smoothing > 0.:
+        criterion = LabelSmoothingCrossEntropy(smoothing=args.FT_smoothing)
     args.warmup = tmp_warmup
     args.weight_decay = 0.05
     #args.epochs = args.epochs*2
@@ -227,8 +230,8 @@ def main(args):
     wandb.log({'ft_best':best_vacc})
     wandb.log({'ft_bob_ep':bob_ep})
     # ----- Save the npy
-    #result_save_name = os.path.join(args.save_path +'bob_0099.npy')
-    #np.save(result_save_name, results)
+    result_save_name = os.path.join(args.save_path +'LPFT.npy')
+    np.save(result_save_name, results)
 
 if __name__ == '__main__':
     args = get_args_parser()
