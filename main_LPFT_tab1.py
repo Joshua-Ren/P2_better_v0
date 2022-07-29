@@ -172,13 +172,15 @@ def main(args):
 #        criterion = SoftTargetCrossEntropy()
 #    else:
 #        criterion = torch.nn.CrossEntropyLoss()
-    if args.loss_type=='mse':
-        criterion = torch.nn.MSELoss()
-    elif args.loss_type=='ce':
-        criterion = torch.nn.CrossEntropyLoss()
+
     # ================== LP the network ============================
     if args.smoothing > 0.:
         criterion = LabelSmoothingCrossEntropy(smoothing=args.smoothing)
+    else:
+        if args.loss_type=='mse':
+            criterion = torch.nn.MSELoss()
+        elif args.loss_type=='ce':
+            criterion = torch.nn.CrossEntropyLoss()
     tmp_warmup = copy.deepcopy(args.warmup)
     args.warmup = 0
     args.weight_decay = 0
@@ -196,7 +198,12 @@ def main(args):
     bob_ep = 99
     # ================== FT the network ============================
     if args.FT_smoothing > 0.:
-        criterion = LabelSmoothingCrossEntropy(smoothing=args.FT_smoothing)
+        criterion = LabelSmoothingCrossEntropy(smoothing=args.smoothing)
+    else:
+        if args.loss_type=='mse':
+            criterion = torch.nn.MSELoss()
+        elif args.loss_type=='ce':
+            criterion = torch.nn.CrossEntropyLoss()
     args.warmup = tmp_warmup
     args.weight_decay = 0.05
     #args.epochs = args.epochs*2
