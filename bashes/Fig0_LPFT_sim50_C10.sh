@@ -24,9 +24,9 @@ source /home/sg955/functorch-env/bin/activate
 cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_LPFT_tab1.py \
---batch_size 128  --dataset cifar100 --figsize 224 --loss_type ce --model resnet50 --num_workers 4 \
+--batch_size 128  --dataset cifar10 --figsize 224 --loss_type ce --model resnet50 --num_workers 4 \
 --Bob_depth 1 --Bob_layer 1 --smoothing 0 \
 --lr 0.01 --warmup 5 --epochs 200 \
 --work_dir ./results/IN1K_simclr_PT --proj_name betterv0_smthLPFT \
 --alice_name resnet50-simclr.pth \
---run_name Tab1_simclr50_C100_baseline
+--run_name Tab1_simclr50_C10_baseline
