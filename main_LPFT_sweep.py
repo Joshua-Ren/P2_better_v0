@@ -24,7 +24,7 @@ from util.datasets import build_dataset
 from engine_LPFT import train_one_epoch, evaluate, evaluate_ood
 
 LP_EPOCHS = [0, 1, 2, 4, 8, 16, 32, 50, 100, 199]
-LP_EPOCHS = [::-1]
+LP_EPOCHS = LP_EPOCHS[::-1]
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Stage2 linear prob and finetune', add_help=False)
