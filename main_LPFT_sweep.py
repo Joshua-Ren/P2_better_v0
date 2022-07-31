@@ -24,6 +24,7 @@ from util.datasets import build_dataset
 from engine_LPFT import train_one_epoch, evaluate, evaluate_ood
 
 LP_EPOCHS = [0, 1, 2, 4, 8, 16, 32, 50, 100, 199]
+LP_EPOCHS = [::-1]
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Stage2 linear prob and finetune', add_help=False)
@@ -240,7 +241,7 @@ def main(args):
         wandb.log({'ft_best':best_vacc})
         wandb.log({'ft_bob_ep':bob_ep})
         # ----- Save the npy
-        result_save_name = os.path.join(args.save_path + 'Bob_ep'+str(bob_ep.zfill(4))+'.npy')
+        result_save_name = os.path.join(args.save_path + 'Bob_ep'+str(bob_ep).zfill(4)+'.npy')
         np.save(result_save_name, results)
 
 if __name__ == '__main__':
