@@ -30,7 +30,7 @@ def get_args_parser():
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * # gpus')
     parser.add_argument('--epochs', default=100, type=int)
-
+    parser.add_argument('--FT_epochs', default=100, type=int)
     # Pretrain checkpoint
     parser.add_argument('--work_dir', default=None,
                         help='path of the pretrained checkpoint')
