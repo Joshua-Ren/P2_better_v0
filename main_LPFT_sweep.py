@@ -175,7 +175,7 @@ def main(args):
 #    else:
 #        criterion = torch.nn.CrossEntropyLoss()
 
-    for gen in range(LP_EPOCHS):
+    for gen in range(len(LP_EPOCHS)):
         bob_ep = LP_EPOCHS[gen]
     # ================== LP the network ============================
         if args.smoothing > 0.:
