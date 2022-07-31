@@ -212,13 +212,14 @@ def main(args):
                 'grad_bob':[]}
         modelt = copy.deepcopy(seed_model)      
         modelt.to(args.device)
+        model0 = copy.deepcopy(modelt)
+        model0.to(args.device)        
         f = file_list[i]
         bob_ep = int(f.split('.')[0].split('_')[-1])
         bob_path = os.path.join(bob_ckp_folder, f)
         load_checkpoint(args, modelt, bob_path, which_part='bob')
         optimizer, scheduler = get_optimizer(modelt, args)
-        model0 = copy.deepcopy(modelt)
-        model0.to(args.device)
+
         
         best_vacc = 0
         for epoch in range(args.epochs):
