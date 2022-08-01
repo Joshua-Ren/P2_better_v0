@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -A NLP-CDT-SL2-GPU
 #SBATCH -p ampere
-#SBATCH --job-name=FT
+#SBATCH --job-name=Sweep
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=6
