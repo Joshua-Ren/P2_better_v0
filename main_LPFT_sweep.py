@@ -211,7 +211,7 @@ def main(args):
         args.warmup = tmp_warmup
         args.weight_decay = 5e-4
         #args.epochs = args.epochs*2
-        args.lr = args.lr*0.01
+        args.lr = 5e-4
         args.min_lr = 1e-6#args.lr*0.02
         results = {'tloss':[],'tacc':[], #'tprobs':[],
                    'vloss':[],'vacc':[],'vprobs':[],
@@ -241,7 +241,7 @@ def main(args):
         wandb.log({'ft_best':best_vacc})
         wandb.log({'ft_bob_ep':bob_ep})
         # ----- Save the npy
-        result_save_name = os.path.join(args.save_path + 'Bob_ep'+str(bob_ep).zfill(4)+'.npy')
+        result_save_name = os.path.join(args.save_path, 'Bob_ep'+str(bob_ep).zfill(4)+'.npy')
         np.save(result_save_name, results)
 
 if __name__ == '__main__':
