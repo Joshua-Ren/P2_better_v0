@@ -57,7 +57,7 @@ def get_args_parser():
                         help='can be mse or ce')    
     parser.add_argument('--optim_type', type=str, default='sgd',
                         help='can be sgd or adam')
-    parser.add_argument('--lr', type=float, default=1e-3, metavar='LR',
+    parser.add_argument('--base_lr', type=float, default=1e-3, metavar='LR',
                         help='learning rate (absolute lr)')
     #parser.add_argument('--clip_grad', type=float, default=10, metavar='NORM',
     #                    help='Clip gradient norm (default: None, no clipping)')
@@ -189,6 +189,7 @@ def main(args):
         tmp_warmup = copy.deepcopy(args.warmup)
         args.warmup = 0
         args.weight_decay = 0
+        args.lr = args.base_lr
         args.min_lr = args.lr
         model = copy.deepcopy(seed_model)
         model.to(args.device)
@@ -211,7 +212,7 @@ def main(args):
         args.warmup = tmp_warmup
         args.weight_decay = 5e-4
         #args.epochs = args.epochs*2
-        args.lr = 5e-4
+        args.lr = args.base_lr*0.005
         args.min_lr = 1e-6#args.lr*0.02
         results = {'tloss':[],'tacc':[], #'tprobs':[],
                    'vloss':[],'vacc':[],'vprobs':[],

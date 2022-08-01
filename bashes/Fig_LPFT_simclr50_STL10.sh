@@ -25,7 +25,7 @@ cd /home/sg955/GitWS/P2_better_v0/
 
 srun python main_LPFT_sweep.py \
 --batch_size 128  --dataset stl10 --figsize 224 --loss_type ce --model resnet50 --num_workers 4 \
---lr 0.01 --FT_epochs 100 \
+--base_lr 0.01 --FT_epochs 100 \
 --work_dir ./results/IN1K_simclr_PT \
 --alice_name resnet50-simclr.pth --proj_name betterv0_tab1LPFT2 \
 --run_name Sweep__simclr50_stl10
